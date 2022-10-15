@@ -4,8 +4,6 @@ import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
 import { db } from "../firebase";
 
-///import addAvatar from "../img/addAvatar.png";
-
 const Chats = () => {
   const [chats, setChats] = useState([]);
 
@@ -24,7 +22,6 @@ const Chats = () => {
     };
 
     currentUser.uid && getChats();
-  
   }, [currentUser.uid]);
 
   const handleSelect = (u) => {
@@ -32,16 +29,6 @@ const Chats = () => {
   };
 
   return (
-    // <div className="chats">
-    //   <div className="userChat">
-    //     <img src={addAvatar} alt="" />
-    //     <div className="userChatInfo">
-    //       <span>{"Hi, User "}</span>
-    //       <p>do meet again ?</p>
-    //     </div>
-    //   </div>
-    // </div>
-
     <div className="chats">
       {Object.entries(chats)
         ?.sort((a, b) => b[1].date - a[1].date)

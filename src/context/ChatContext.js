@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 import { AuthContext } from "./AuthContext";
 
-export const ChatContext = createContext("");
+export const ChatContext = createContext();
 
 export const ChatContextProvider = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
@@ -34,5 +34,3 @@ export const ChatContextProvider = ({ children }) => {
     </ChatContext.Provider>
   );
 };
-
-export default ChatContextProvider;
