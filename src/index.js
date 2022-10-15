@@ -4,7 +4,6 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import AuthContextProvider from "./context/AuthContext";
 import ChatContextProvider from "./context/ChatContext";
-//import ChatContextProvider from "./context/ChatContextProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

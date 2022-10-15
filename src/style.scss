@@ -17,7 +17,7 @@
 }
 
 .formContainer {
-  background-color: #a7bcff;
+  background-color: #17dfc7;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -30,6 +30,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    justify-content: center;
     align-items: center;
 
     .logo {
@@ -41,7 +42,7 @@
 
     .title {
       color: #5d5b8d;
-      font-size: 12px;
+      font-size: 20px;
     }
 
     form {
@@ -73,7 +74,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        color: #8da4f1;
+        color: #11cd0e;
         font-size: 12px;
         cursor: pointer;
 
@@ -81,11 +82,12 @@
           width: 32px;
         }
       }
+
     }
 
     p {
-      color: #5d5b8d;
-      font-size: 12px;
+      color: #8d5b5b;
+      font-size: 18px;
       margin-top: 10px;
     }
   }
@@ -222,6 +224,7 @@
         justify-content: space-between;
         padding: 10px;
         color: lightgray;
+
       }
 
       .chatIcons {
@@ -263,18 +266,25 @@
             max-width: 80%;
             display: flex;
             flex-direction: column;
+
             gap: 10px;
 
             p {
               background-color: white;
               padding: 10px 20px;
               border-radius: 0px 10px 10px 10px;
-              max-width: max-content;
+              max-width: 50%;
+
+              img {
+                  max-width: 100%;
+              
+                }
+
             }
 
-            img {
-              width: 50%;
-            }
+            
+
+
           }
 
           &.owner {
@@ -308,8 +318,10 @@
           color: #2f2d52;
           font-size: 18px;
 
+
           &::placeholder {
             color: lightgray;
+
           }
         }
 

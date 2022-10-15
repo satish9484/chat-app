@@ -25,36 +25,10 @@ function App() {
     return children;
   };
 
-  return (
-
-    
-    // <React.Fragment>
-    //   {/* <Register/> */}
-    //   <Login />
-    // </React.Fragment>
-
-    // <BrowserRouter>
-    //   <Routes>
-    //     <Route path="/">
-    //       <Route
-    //         index
-    //         element={
-    // // <ProtectedRoute>
-    // <Home />
-    // // </ProtectedRoute>
-    //         }
-    //       />
-    //       <Route path="login" element={<Login />} />
-    //       <Route path="register" element={<Register />} />
-    //     </Route>
-    //   </Routes>
-    // </BrowserRouter>
-
-  
+  return (  
       <Router>
         <Routes>
           <Route path="/register" element={<Register />} />
-
           <Route
             exact
             path="/"
@@ -64,12 +38,7 @@ function App() {
             </ProtectedRoute>
             }
           />
-
           <Route path="/login" element={<Login />} />
-
-          {/* <Navigate to="/" replace={true} /> */}
-
-          {/* <Route path="/" element={<Navigate replace to="/home" />} /> */}
         </Routes>
       </Router>
   

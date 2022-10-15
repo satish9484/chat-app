@@ -16,21 +16,15 @@ const Login = () => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-
         console.log("SUCCESSFULLY LOGIN");
-
-        console.log("User login  " + user);
-
+        console.log("User login  " + Object.entries(user));
         navigate("/");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-
         console.log("User login ErrorCode " + errorCode);
-
         console.log("User login  Error Message " + errorMessage);
-
         setErr(true);
       });
   };
@@ -47,7 +41,6 @@ const Login = () => {
         </form>
         <p>
           You don't have an account? <Link to="/register">Register</Link>
-          {/* You don't have an account? */}
         </p>
       </div>
     </div>
