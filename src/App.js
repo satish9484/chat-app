@@ -1,6 +1,6 @@
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignUp from "./pages/SignUp";
 import "./style.scss";
 
 
@@ -25,23 +25,22 @@ function App() {
     return children;
   };
 
-  return (  
-      <Router>
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route
-            exact
-            path="/"
-            element={
+  return (
+    <Router>
+      <Routes>
+        <Route path="/register" element={<SignUp />} />
+        <Route
+          exact
+          path="/"
+          element={
             <ProtectedRoute>
-              <Home />
+              <HomePage />
             </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </Router>
-  
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </Router>
   );
 }
 
