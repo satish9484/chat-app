@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
-// import { getStorage, 
-  // ref, 
-  // deleteObject
+// import { getStorage,
+// ref,
+// deleteObject
 //  } from "firebase/storage";
 
 const Message = ({ message }) => {

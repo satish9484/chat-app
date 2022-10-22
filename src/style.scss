@@ -16,9 +16,16 @@
   }
 }
 
-@media (prefers-color-scheme: dark){
-  .day.dark-scheme {background: #333; color: white;}
-  .night.dark-scheme {background: black; color: #ddd;}
+@media (prefers-color-scheme: dark) {
+  .day.dark-scheme {
+    background: #333;
+    color: white;
+  }
+
+  .night.dark-scheme {
+    background: black;
+    color: #ddd;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +51,7 @@
     color: black;
   }
 }
+
 .formContainer {
   background-color: #17dfc7;
   height: 100vh;
@@ -304,13 +312,13 @@
               max-width: 50%;
 
               img {
-                  max-width: 100%;
-              
-                }
+                max-width: 100%;
+
+              }
 
             }
 
-            
+
 
 
           }

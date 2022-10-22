@@ -3,7 +3,6 @@ import LoginPage from "./pages/LoginPage";
 import SignUp from "./pages/SignUp";
 import "./style.scss";
 
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,7 +14,7 @@ import React, { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {
- const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
   const ProtectedRoute = ({ children }) => {
     if (!currentUser) {
