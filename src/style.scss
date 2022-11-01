@@ -148,6 +148,8 @@
       width: 90%;
     }
 
+    // SideBar include Navbar.js, Search.js, Chats.js
+
     .sidebar {
       flex: 1;
       background-color: #3e3c61;
@@ -249,6 +251,8 @@
       }
     }
 
+    // Chat.js include componets are Messages.js and Input.js
+
     .chat {
       flex: 2;
 
@@ -278,6 +282,8 @@
         padding: 10px;
         height: calc(100% - 160px);
         overflow: scroll;
+
+        // Message Layout Desing  From Message.js
 
         .message {
           display: flex;
@@ -338,6 +344,8 @@
           }
         }
       }
+
+      // Input of Message Design From Input.js
 
       .input {
         height: 50px;
