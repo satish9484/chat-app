@@ -15,9 +15,9 @@ const LoginPage = () => {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
+        //const user = userCredential.user;
         console.log("SUCCESSFULLY LOGIN");
-        console.log("User login  " + Object.entries(user));
+       // console.log("User login  " + Object.entries(user));
         navigate("/");
       })
       .catch((error) => {
