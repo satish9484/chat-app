@@ -11,24 +11,12 @@ const Message = ({ message }) => {
   const { data } = useContext(ChatContext);
 
   const ref = useRef();
-  //const storage = getStorage();
-
+  
   useEffect(() => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
   }, [message]);
 
-  // const deleteTheMessage = () => {
-  //   const desertRef = ref(storage, data.user.message.img);
 
-  //   // Delete the file
-  //   deleteObject(desertRef)
-  //     .then(() => {
-  //       // File deleted successfully
-  //     })
-  //     .catch((error) => {
-  //       // Uh-oh, an error occurred!
-  //     });
-  // };
 
   return (
     <div

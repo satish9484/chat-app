@@ -1,19 +1,27 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
+
+import Loader from "./components/loader/index";
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthContextProvider } from "./context/AuthContext";
 import { ChatContextProvider } from "./context/ChatContext";
 
+import Home from "./newDesign/Home";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <AuthContextProvider>
-    <ChatContextProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </ChatContextProvider>
-  </AuthContextProvider>
+  <Suspense fallback={<Loader isSuspense />}>
+    <AuthContextProvider>
+      <ChatContextProvider>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </ChatContextProvider>
+    </AuthContextProvider>
+  </Suspense>
+  // <Home/>
 );
 
 // If you want to start measuring performance in your app, pass a function
