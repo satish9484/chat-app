@@ -1,20 +1,17 @@
 import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    Navigate,
-  } from "react-router-dom";
-  import React, { useContext } from "react";
-  import { AuthContext } from "./context/AuthContext";
-  import HomePage from "./pages/HomePage";
-  import "./style.scss";
-  import SignUp from './pages/SignUp.js'
-   import LoginPage from "./pages/LoginPage";
-  
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import React, { useContext } from 'react';
+import { AuthContext } from './context/AuthContext';
+import HomePage from './pages/HomePage';
+import './style.scss';
+import SignUp from './pages/SignUp.js';
+import LoginPage from './pages/LoginPage';
 
-
-
-  function App() {
+function App() {
   const { currentUser } = useContext(AuthContext);
 
   const ProtectedRoute = ({ children }) => {

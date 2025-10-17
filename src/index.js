@@ -1,30 +1,27 @@
-import React, { Suspense } from "react";
-import ReactDOM from "react-dom/client";
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom/client';
 
-import Loader from "./components/loader/index";
+import Loader from './components/loader/index';
 
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { AuthContextProvider } from "./context/AuthContext";
-import { ChatContextProvider } from "./context/ChatContext";
+import App from './App';
+import { AuthContextProvider } from './context/AuthContext';
+import { ChatContextProvider } from './context/ChatContext';
+import { ThemeProvider } from './context/ThemeContext';
 
-import Home from "./newDesign/Home";
+// import Home from "./newDesign/Home";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Suspense fallback={<Loader isSuspense />}>
-    <AuthContextProvider>
-      <ChatContextProvider>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </ChatContextProvider>
-    </AuthContextProvider>
+    <ThemeProvider>
+      <AuthContextProvider>
+        <ChatContextProvider>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </ChatContextProvider>
+      </AuthContextProvider>
+    </ThemeProvider>
   </Suspense>
   // <Home/>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

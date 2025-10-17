@@ -1,14 +1,20 @@
-import React from "react";
-import Navbar from "./Navbar";
-import Search from "./Search";
-import Chats from "./Chats";
+import React, { useState } from 'react';
+import Chats from './Chats';
+import Navbar from './Navbar';
+import Search from './Search';
 
 const Sidebar = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchChange = term => {
+    setSearchTerm(term);
+  };
+
   return (
     <div className="sidebar">
       <Navbar />
-      <Search />
-      <Chats />
+      <Search onSearchChange={handleSearchChange} />
+      <Chats searchTerm={searchTerm} />
     </div>
   );
 };

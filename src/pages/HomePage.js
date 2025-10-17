@@ -1,6 +1,7 @@
-import React from "react";
-import Sidebar from "../components/Sidebar";
-import Chat from "../components/Chat";
+import React from 'react';
+import Chat from '../components/Chat';
+import Sidebar from '../components/Sidebar';
+import '../style.scss';
 
 const Home_Page = () => {
   return (

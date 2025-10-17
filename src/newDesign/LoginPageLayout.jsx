@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const TailwindTest = () => {
   return (
@@ -11,7 +11,7 @@ const TailwindTest = () => {
               className="flex items-center shadow-lg rounded-lg"
               style={{
                 background:
-                  "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)",
+                  'linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)',
               }}
             >
               <div className="text-white px-4 md:p-12 md:mx-6">
@@ -49,17 +49,12 @@ const TailwindTest = () => {
                       <div className="text-center pt-1 mb-12 pb-1">
                         <button
                           className="inline-block px-6 py-2.5 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg w-full mb-3 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110  duration-150"
-
-                        
-                         
-                         
-                         
                           type="button"
                           data-mdb-ripple="true"
                           data-mdb-ripple-color="light"
                           style={{
                             background:
-                              "linear-gradient(to right, #ee7724, #d8363a,#dd3675, #b44593)",
+                              'linear-gradient(to right, #ee7724, #d8363a,#dd3675, #b44593)',
                           }}
                         >
                           Log in

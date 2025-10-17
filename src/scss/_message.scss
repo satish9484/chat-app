@@ -1,0 +1,30 @@
+// Message Component Styles
+// ========================================
+
+.message {
+  &.loading-state {
+    justify-content: center;
+
+    .messageContent {
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-style: italic;
+      text-align: center;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+  }
+
+  &.empty-state {
+    justify-content: center;
+
+    .messageContent {
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px dashed var(--border-color);
+    }
+  }
+}

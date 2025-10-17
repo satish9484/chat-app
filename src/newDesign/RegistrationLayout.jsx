@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Registration = () => {
   const [selectedImage, setSelectedImage] = useState();
 
-  const handleSelectImage = (e) => {
+  const handleSelectImage = e => {
     const file = e.target.files[0];
     setSelectedImage(URL.createObjectURL(file));
   };
@@ -53,7 +53,7 @@ const Registration = () => {
                           type="file"
                           accept="image/*"
                           name="image"
-                          style={{ display: "none" }}
+                          style={{ display: 'none' }}
                           onChange={handleSelectImage}
                         />
                         <svg

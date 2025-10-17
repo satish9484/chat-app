@@ -1,0 +1,99 @@
+// Form Container Styles (Login/Register)
+// ========================================
+
+.formContainer {
+  background-color: #17dfc7;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+
+  .formWrapper {
+    background-color: var(--form-bg);
+    padding: 20px 60px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px var(--shadow-color);
+
+    .logo {
+      color: var(--form-text);
+      font-weight: bold;
+      font-size: 24px;
+      transition: color 0.3s ease;
+    }
+
+    .title {
+      color: var(--form-text);
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      input {
+        padding: 15px;
+        border: none;
+        width: 250px;
+        border-bottom: 1px solid var(--form-border);
+        background-color: transparent;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+
+        &::placeholder {
+          color: var(--form-placeholder);
+        }
+
+        &:focus {
+          outline: none;
+          border-bottom-color: var(--accent-primary);
+        }
+      }
+
+      button {
+        background-color: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+        padding: 10px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: var(--btn-primary-hover);
+          transform: translateY(-1px);
+        }
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--success-color);
+        font-size: 12px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+
+        img {
+          width: 32px;
+        }
+      }
+    }
+
+    p {
+      color: var(--text-secondary);
+      font-size: 18px;
+      margin-top: 10px;
+      transition: color 0.3s ease;
+    }
+  }
+}

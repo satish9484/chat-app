@@ -1,25 +1,24 @@
 /* eslint-disable no-unused-vars */
-const formContainer=""
+const formContainer = '';
 
-const formWrapper =""
+const formWrapper = '';
 
-const logo=""
+const logo = '';
 
-const title=""
+const title = '';
 
+// Form
 
-// Form 
+const form = '';
 
-const form=''           
+const input = '';
 
-const input=''
+const placeholder = '';
 
-const placeholder=''
+const button = '';
 
-const button=''
+const label = '';
 
-const label=''
+const img = '';
 
-const img=''
-
-const p=''
+const p = '';

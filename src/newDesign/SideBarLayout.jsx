@@ -1,8 +1,11 @@
-import React from "react";
+import React from 'react';
 
 const SideBar = () => {
   return (
-    <aside className="h-96 sm:w-full sm:h-full overflow-hidden relative" aria-label="Sidebar">
+    <aside
+      className="h-96 sm:w-full sm:h-full overflow-hidden relative"
+      aria-label="Sidebar"
+    >
       <div className="sm:max-h-fit w-full  py-4 px-3 bg-gray-50  dark:bg-gray-800">
         <div>
           <a
@@ -23,9 +26,9 @@ const SideBar = () => {
           <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
-             // src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
-             src='../public/bonfire_fire_dark.jpg'
-             alt=""
+              // src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
+              src="../public/bonfire_fire_dark.jpg"
+              alt=""
             />
             <div className="flex flex-col">
               <strong className="text-slate-900 text-sm font-medium dark:text-slate-200">
@@ -36,11 +39,11 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               //src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
-               src='../public/IMG_edited.jpg'
+              src="../public/IMG_edited.jpg"
               alt=""
             />
             <div className="flex flex-col">
@@ -52,7 +55,7 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
@@ -67,7 +70,7 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
@@ -82,7 +85,7 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
@@ -97,7 +100,7 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
@@ -112,7 +115,7 @@ const SideBar = () => {
               </span>
             </div>
           </div>
-           <div className="flex items-center gap-4 p-4">
+          <div className="flex items-center gap-4 p-4">
             <img
               className="w-12 h-12 rounded-full"
               src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=4&w=256&h=256&q=80"
