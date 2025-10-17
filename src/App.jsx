@@ -1,15 +1,16 @@
+import React, { useContext } from 'react';
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from 'react-router-dom';
-import React, { useContext } from 'react';
-import { AuthContext } from './context/AuthContext';
-import HomePage from './pages/HomePage';
+import { Bounce, ToastContainer } from 'react-toastify';
+import { AuthContext } from './context/AuthContext.js';
+import HomePage from './pages/HomePage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import SignUp from './pages/SignUp.jsx';
 import './style.scss';
-import SignUp from './pages/SignUp.js';
-import LoginPage from './pages/LoginPage';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -39,6 +40,19 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </>
   );
 }

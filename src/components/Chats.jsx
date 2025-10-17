@@ -8,6 +8,7 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { db } from '../firebase';
@@ -28,64 +29,64 @@ const Chats = ({ searchTerm }) => {
 
   const getFriends = useCallback(async () => {
     try {
-      console.log('🔍 Loading friends for user:', currentUser.uid);
+      // console.log('🔍 Loading friends for user:', currentUser.uid);
       const friendsDoc = doc(db, 'friends', currentUser.uid);
       const friendsSnapshot = await getDoc(friendsDoc);
 
-      console.log('Friends document exists:', friendsSnapshot.exists());
+      // console.log('Friends document exists:', friendsSnapshot.exists());
 
       if (friendsSnapshot.exists()) {
         const friendsData = friendsSnapshot.data();
-        console.log('Friends data:', friendsData);
+        // console.log('Friends data:', friendsData);
         const friendsList = friendsData.friendsList || [];
-        console.log('Friends list loaded:', friendsList);
-        console.log('Friends count:', friendsList.length);
+        // console.log('Friends list loaded:', friendsList);
+        // console.log('Friends count:', friendsList.length);
         setFriends(friendsList);
       } else {
-        console.log('No friends document found for user:', currentUser.uid);
-        console.log('Creating empty friends list');
+        // console.log('No friends document found for user:', currentUser.uid);
+        // console.log('Creating empty friends list');
         setFriends([]);
       }
     } catch (error) {
-      console.error('Error getting friends:', error);
+      // console.error('Error getting friends:', error);
       setFriends([]);
     }
   }, [currentUser?.uid]);
 
   useEffect(() => {
     const getChats = () => {
-      console.log('🚀 Setting up Firebase listener for user:', currentUser.uid);
+      // console.log('🚀 Setting up Firebase listener for user:', currentUser.uid);
 
       const unsub = onSnapshot(
         doc(db, 'userChats', currentUser.uid),
         doc => {
           const chatData = doc.data();
 
-          console.group('🔥 Firebase Listener Triggered');
-          console.log('Document exists:', doc.exists());
-          console.log('Chat data received:', chatData);
-          console.log('Chat data keys:', Object.keys(chatData || {}));
-          console.log('Chat data entries:', Object.entries(chatData || {}));
+          // console.group('🔥 Firebase Listener Triggered');
+          // console.log('Document exists:', doc.exists());
+          // console.log('Chat data received:', chatData);
+          // console.log('Chat data keys:', Object.keys(chatData || {}));
+          // console.log('Chat data entries:', Object.entries(chatData || {}));
 
           // Check for lastMessage entries specifically
-          console.group('📝 LastMessage Entries');
+          // console.group('📝 LastMessage Entries');
           Object.entries(chatData || {}).forEach(([key, value]) => {
             if (key.includes('lastMessage')) {
-              console.log(`Found lastMessage key: ${key}`, value);
+              // console.log(`Found lastMessage key: ${key}`, value);
             }
           });
-          console.groupEnd();
+          // console.groupEnd();
 
-          console.groupEnd();
+          // console.groupEnd();
           setChats(chatData || {});
         },
         error => {
-          console.error('❌ Firebase listener error:', error);
+          // console.error('❌ Firebase listener error:', error);
         }
       );
 
       return () => {
-        console.log('🧹 Cleaning up Firebase listener');
+        // console.log('🧹 Cleaning up Firebase listener');
         unsub();
       };
     };
@@ -103,20 +104,20 @@ const Chats = ({ searchTerm }) => {
             users.push({ id: doc.id, ...doc.data() });
           }
         });
-        console.log(
-          'Current user:',
-          currentUser?.displayName,
-          currentUser?.uid
-        );
-        console.log('All users (filtered):', users);
+        // console.log(
+        //   'Current user:',
+        //   currentUser?.displayName,
+        //   currentUser?.uid
+        // );
+        // console.log('All users (filtered):', users);
         setAllUsers(users);
       } catch (error) {
-        console.error('Error getting users:', error);
+        // console.error('Error getting users:', error);
       }
     };
 
     if (currentUser?.uid) {
-      console.log('🔄 Loading all data for user:', currentUser.uid);
+      // console.log('🔄 Loading all data for user:', currentUser.uid);
       getChats();
       getAllUsers();
       getFriends();
@@ -129,16 +130,16 @@ const Chats = ({ searchTerm }) => {
   }, [searchTerm]);
 
   const handleSelect = u => {
-    console.log('Selecting user:', u);
+    // console.log('Selecting user:', u);
 
     // Check if user object is valid
     if (!u || !u.uid) {
-      console.error('Invalid user object:', u);
+      // console.error('Invalid user object:', u);
       return;
     }
 
-    console.log('User displayName:', u.displayName);
-    console.log('User uid:', u.uid);
+    // console.log('User displayName:', u.displayName);
+    // console.log('User uid:', u.uid);
     dispatch({ type: 'CHANGE_USER', payload: u });
   };
 
@@ -170,7 +171,8 @@ const Chats = ({ searchTerm }) => {
         { merge: true }
       );
 
-      console.log('Friend added successfully');
+      // console.log('Friend added successfully');
+      toast.success(`${user.displayName} added as friend!`);
       await getFriends(); // Refresh friends list
 
       // Show success state
@@ -184,7 +186,8 @@ const Chats = ({ searchTerm }) => {
         setAddedFriend(null);
       }, 3000);
     } catch (error) {
-      console.error('Error adding friend:', error);
+      // console.error('Error adding friend:', error);
+      toast.error(`Failed to add ${user.displayName} as friend`);
     } finally {
       setAddingFriend(null); // Clear loading state
     }
@@ -202,8 +205,8 @@ const Chats = ({ searchTerm }) => {
     setShowConfirmModal(false); // Hide modal
 
     try {
-      console.log('Removing friend:', friendToRemove.displayName);
-      console.log('Note: Chat history will be preserved');
+      // console.log('Removing friend:', friendToRemove.displayName);
+      // console.log('Note: Chat history will be preserved');
 
       // Only remove from friends lists - DO NOT delete chat data
       // Remove from current user's friends list
@@ -219,7 +222,7 @@ const Chats = ({ searchTerm }) => {
         await setDoc(friendsDoc, {
           friendsList: updatedFriendsList,
         });
-        console.log("Removed from current user's friends list");
+        // console.log("Removed from current user's friends list");
       }
 
       // Remove from the other user's friends list
@@ -236,10 +239,11 @@ const Chats = ({ searchTerm }) => {
         await setDoc(otherUserFriendsDoc, {
           friendsList: updatedOtherUserFriendsList,
         });
-        console.log("Removed from other user's friends list");
+        // console.log("Removed from other user's friends list");
       }
 
-      console.log('Friend removed successfully - chat history preserved');
+      // console.log('Friend removed successfully - chat history preserved');
+      toast.success(`${friendToRemove.displayName} removed from friends list`);
 
       // Reset chat context if currently chatting with the removed friend
       if (friendToRemove.uid === currentUser?.uid) {
@@ -251,7 +255,10 @@ const Chats = ({ searchTerm }) => {
 
       // No need to refresh chats - they remain intact
     } catch (error) {
-      console.error('Error removing friend:', error);
+      // console.error('Error removing friend:', error);
+      toast.error(
+        `Failed to remove ${friendToRemove.displayName} from friends list`
+      );
     } finally {
       setRemovingFriend(null); // Clear loading state
     }
@@ -283,6 +290,8 @@ const Chats = ({ searchTerm }) => {
                 <button
                   className={`add-friend-btn ${
                     isAlreadyFriend(user) ? 'already-friends-btn' : ''
+                  } ${addingFriend === user.uid ? 'adding-friend-btn' : ''} ${
+                    addedFriend === user.uid ? 'added-friend-btn' : ''
                   }`}
                   onClick={() => !isAlreadyFriend(user) && addFriend(user)}
                   disabled={
@@ -290,26 +299,6 @@ const Chats = ({ searchTerm }) => {
                     addedFriend === user.uid ||
                     isAlreadyFriend(user)
                   }
-                  style={{
-                    opacity:
-                      addingFriend === user.uid ||
-                      addedFriend === user.uid ||
-                      isAlreadyFriend(user)
-                        ? 0.7
-                        : 1,
-                    cursor:
-                      addingFriend === user.uid ||
-                      addedFriend === user.uid ||
-                      isAlreadyFriend(user)
-                        ? 'not-allowed'
-                        : 'pointer',
-                    backgroundColor:
-                      addedFriend === user.uid
-                        ? '#28a745'
-                        : isAlreadyFriend(user)
-                          ? '#6c757d'
-                          : '#007bff',
-                  }}
                 >
                   {addingFriend === user.uid ? (
                     <div className="loading-spinner">
@@ -343,23 +332,23 @@ const Chats = ({ searchTerm }) => {
           >
             <button
               onClick={async () => {
-                console.log('🧪 Manual Firebase Test');
+                // console.log('🧪 Manual Firebase Test');
                 try {
                   const docRef = doc(db, 'userChats', currentUser.uid);
                   const docSnap = await getDoc(docRef);
-                  console.log(
-                    'Manual test - Document exists:',
-                    docSnap.exists()
-                  );
-                  console.log('Manual test - Document data:', docSnap.data());
+                  // console.log(
+                  //   'Manual test - Document exists:',
+                  //   docSnap.exists()
+                  // );
+                  // console.log('Manual test - Document data:', docSnap.data());
 
                   // Manually update the chats state
                   if (docSnap.exists()) {
-                    console.log('🔄 Manually updating chats state');
+                    // console.log('🔄 Manually updating chats state');
                     setChats(docSnap.data());
                   }
                 } catch (error) {
-                  console.error('Manual test error:', error);
+                  // console.error('Manual test error:', error);
                 }
               }}
               style={{ padding: '5px 10px', margin: '5px' }}
@@ -368,25 +357,25 @@ const Chats = ({ searchTerm }) => {
             </button>
             <button
               onClick={() => {
-                console.log('🔄 Force refresh chats');
+                // console.log('🔄 Force refresh chats');
                 // Force re-run the getChats function
                 const getChats = () => {
-                  console.log(
-                    '🚀 Setting up Firebase listener for user:',
-                    currentUser.uid
-                  );
+                  // console.log(
+                  //   '🚀 Setting up Firebase listener for user:',
+                  //   currentUser.uid
+                  // );
 
                   const unsub = onSnapshot(
                     doc(db, 'userChats', currentUser.uid),
                     doc => {
                       const chatData = doc.data();
-                      console.log('🔥 Firebase Listener Triggered (Manual)');
-                      console.log('Document exists:', doc.exists());
-                      console.log('Chat data received:', chatData);
+                      // console.log('🔥 Firebase Listener Triggered (Manual)');
+                      // console.log('Document exists:', doc.exists());
+                      // console.log('Chat data received:', chatData);
                       setChats(chatData || {});
                     },
                     error => {
-                      console.error('❌ Firebase listener error:', error);
+                      // console.error('❌ Firebase listener error:', error);
                     }
                   );
                   return unsub;
@@ -407,16 +396,16 @@ const Chats = ({ searchTerm }) => {
         {!showSearchResults && chats && Object.entries(chats).length > 0 && (
           <div className="recent-chats">
             <h3>Recent</h3>
-            {console.log('All chats entries:', Object.entries(chats))}
+            {/* {console.log('All chats entries:', Object.entries(chats))} */}
             {(() => {
-              console.group('📊 Parsing Chat Data');
-              console.log('🔍 Current friends state:', friends);
-              console.log('🔍 Friends count:', friends.length);
+              // console.group('📊 Parsing Chat Data');
+              // console.log('🔍 Current friends state:', friends);
+              // console.log('🔍 Friends count:', friends.length);
               // Parse the Firebase data structure
               const chatEntries = [];
               const processedChatIds = new Set();
 
-              console.group('🔍 Processing Chat Entries');
+              // console.group('🔍 Processing Chat Entries');
               Object.entries(chats).forEach(([key, value]) => {
                 // Extract chatId from keys like "chatId.userInfo" or "chatId.date"
                 const chatId = key.split('.')[0];
@@ -438,11 +427,11 @@ const Chats = ({ searchTerm }) => {
                     lastMessage = chats[chatId].lastMessage;
                   }
 
-                  console.group(`💬 Chat ${chatId}`);
-                  console.log('userInfo:', userInfo);
-                  console.log('lastMessage:', lastMessage);
-                  console.log('date:', date);
-                  console.groupEnd();
+                  // console.group(`💬 Chat ${chatId}`);
+                  // console.log('userInfo:', userInfo);
+                  // console.log('lastMessage:', lastMessage);
+                  // console.log('date:', date);
+                  // console.groupEnd();
 
                   if (userInfo) {
                     // Only include chats with users who are in the friends list
@@ -450,15 +439,15 @@ const Chats = ({ searchTerm }) => {
                       friend => friend.uid === userInfo.uid
                     );
 
-                    console.log(
-                      `🔍 Checking friend status for ${userInfo.displayName}:`
-                    );
-                    console.log('  - User UID:', userInfo.uid);
-                    console.log('  - Is friend:', isFriend);
-                    console.log(
-                      '  - Available friends:',
-                      friends.map(f => `${f.displayName} (${f.uid})`)
-                    );
+                    // console.log(
+                    //   `🔍 Checking friend status for ${userInfo.displayName}:`
+                    // );
+                    // console.log('  - User UID:', userInfo.uid);
+                    // console.log('  - Is friend:', isFriend);
+                    // console.log(
+                    //   '  - Available friends:',
+                    //   friends.map(f => `${f.displayName} (${f.uid})`)
+                    // );
 
                     if (isFriend) {
                       chatEntries.push({
@@ -467,37 +456,37 @@ const Chats = ({ searchTerm }) => {
                         date,
                         lastMessage,
                       });
-                      console.log(
-                        `✅ Added ${userInfo.displayName} to recent chats`
-                      );
+                      // console.log(
+                      //   `✅ Added ${userInfo.displayName} to recent chats`
+                      // );
                     } else {
-                      console.log(
-                        `❌ Skipped ${userInfo.displayName} - not in friends list`
-                      );
+                      // console.log(
+                      //   `❌ Skipped ${userInfo.displayName} - not in friends list`
+                      // );
                     }
                   }
                 }
               });
-              console.groupEnd();
+              // console.groupEnd();
 
-              console.group('📋 Final Chat Entries');
-              console.log('Parsed chat entries:', chatEntries);
+              // console.group('📋 Final Chat Entries');
+              // console.log('Parsed chat entries:', chatEntries);
               chatEntries.forEach(entry => {
-                console.group(
-                  `👤 Entry ${entry.chatId} (${entry.userInfo?.displayName})`
-                );
-                console.log('userInfo:', entry.userInfo?.displayName);
-                console.log('lastMessage:', entry.lastMessage);
-                console.log('hasText:', entry.lastMessage?.text);
-                console.log('textLength:', entry.lastMessage?.text?.length);
-                console.log('date:', entry.lastMessage?.date);
-                console.groupEnd();
+                // console.group(
+                //   `👤 Entry ${entry.chatId} (${entry.userInfo?.displayName})`
+                // );
+                // console.log('userInfo:', entry.userInfo?.displayName);
+                // console.log('lastMessage:', entry.lastMessage);
+                // console.log('hasText:', entry.lastMessage?.text);
+                // console.log('textLength:', entry.lastMessage?.text?.length);
+                // console.log('date:', entry.lastMessage?.date);
+                // console.groupEnd();
               });
-              console.groupEnd();
-              console.groupEnd();
+              // console.groupEnd();
+              // console.groupEnd();
 
               if (chatEntries.length === 0) {
-                console.log('No chats passed filter, showing debug info');
+                // console.log('No chats passed filter, showing debug info');
                 return (
                   <div
                     style={{
@@ -540,19 +529,19 @@ const Chats = ({ searchTerm }) => {
                 .map(chat => {
                   const { chatId, userInfo, lastMessage } = chat;
 
-                  console.group(`🎨 Rendering Chat: ${chatId}`);
-                  console.log('Chat data:', chat);
-                  console.log('User info:', userInfo);
-                  console.log('Display name:', userInfo?.displayName);
-                  console.log('Last message:', lastMessage);
-                  console.groupEnd();
+                  // console.group(`🎨 Rendering Chat: ${chatId}`);
+                  // console.log('Chat data:', chat);
+                  // console.log('User info:', userInfo);
+                  // console.log('Display name:', userInfo?.displayName);
+                  // console.log('Last message:', lastMessage);
+                  // console.groupEnd();
 
                   return (
                     <div
                       className="userChat"
                       key={chatId}
                       onClick={() => {
-                        console.log('Clicking chat:', userInfo);
+                        // console.log('Clicking chat:', userInfo);
                         if (userInfo) {
                           handleSelect(userInfo);
                         }
@@ -599,12 +588,12 @@ const Chats = ({ searchTerm }) => {
         {!showSearchResults && (
           <div className="friends-list">
             <h3>Friends</h3>
-            {console.log(
+            {/* {console.log(
               'Rendering friends list, friends count:',
               friends.length
-            )}
+            )} */}
             {friends.map(friend => {
-              console.log('Rendering friend:', friend);
+              // console.log('Rendering friend:', friend);
               return (
                 <div className="userChat" key={friend.uid}>
                   <img src={friend.photoURL || '/default-avatar.png'} alt="" />
@@ -616,16 +605,11 @@ const Chats = ({ searchTerm }) => {
                     <p>Start a conversation</p>
                   </div>
                   <button
-                    className="remove-friend-btn"
+                    className={`remove-friend-btn ${
+                      removingFriend === friend.uid ? 'removing-friend-btn' : ''
+                    }`}
                     onClick={() => showRemoveConfirmation(friend)}
                     disabled={removingFriend === friend.uid}
-                    style={{
-                      opacity: removingFriend === friend.uid ? 0.7 : 1,
-                      cursor:
-                        removingFriend === friend.uid
-                          ? 'not-allowed'
-                          : 'pointer',
-                    }}
                     title="Remove friend"
                   >
                     {removingFriend === friend.uid ? (

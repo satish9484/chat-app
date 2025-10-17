@@ -1,6 +1,7 @@
 import { signOut } from 'firebase/auth';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { auth } from '../firebase';
 import DarkModeToggle from './DarkModeToggle';
@@ -20,13 +21,13 @@ const NavigationBar = () => {
             onClick={() => {
               signOut(auth)
                 .then(() => {
-                  console.log('Successfully Signout');
+                  toast.success('Successfully Signout');
                 })
                 .catch(error => {
                   const errorCode = error.code;
                   const errorMessage = error.message;
-                  console.log('User SignOut ErrorCode ' + errorCode);
-                  console.log('User SignOut  Error Message ' + errorMessage);
+                  toast.error('User SignOut ErrorCode ' + errorCode);
+                  toast.error('User SignOut  Error Message ' + errorMessage);
                 });
             }}
           >

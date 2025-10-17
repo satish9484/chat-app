@@ -1,23 +1,23 @@
-// Main SCSS file - imports all modules
-// This file is imported by style.scss as the main entry point
+// Main SCSS file - uses all modules
+// This file is useed by style.scss as the main entry point
 
-// Import base styles first
-@import 'layout';
-@import 'mixins';
-@import 'responsive';
+// use base styles first
+@use 'layout';
+@use 'mixins';
+@use 'responsive';
 
-// Import utility classes
-@import 'utilities';
+// use utility classes
+@use 'utilities';
 
-// Import component styles
-@import 'sidebar';
-@import 'chat';
-@import 'input';
-@import 'avatars';
-@import 'message';
-@import 'dark-mode';
-@import 'forms';
-@import 'modal';
+// use component styles
+@use 'sidebar';
+@use 'chat';
+@use 'input';
+@use 'avatars';
+@use 'message';
+@use 'dark-mode';
+@use 'forms';
+@use 'modal';
 
 // Custom scrollbar styling
 ::-webkit-scrollbar {

@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { auth, db, storage } from '../firebase';
 import Add from '../img/addAvatar.png';
 
@@ -112,23 +113,104 @@ const SignUp = () => {
     }
   };
 
-  // Function to check if user exists in Firestore database
+  // Professional arrow function to check if user exists in Firestore database
   const checkUserExists = async displayName => {
-    try {
+    const checkUserPromise = async () => {
       const userDocRef = doc(db, 'users', displayName);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        console.log('✅ USER EXISTS in database:', userDoc.data());
-        return true;
-      } else {
-        console.log('❌ USER DOES NOT EXIST in database');
-        return false;
+        throw new Error(
+          `Username "${displayName}" is already taken. Please choose a different username.`
+        );
       }
-    } catch (error) {
-      console.error('Error checking user existence:', error);
-      return false;
-    }
+
+      return `Username "${displayName}" is available!`;
+    };
+
+    return toast.promise(checkUserPromise, {
+      pending: '🔍 Checking username availability...',
+      success: '✅ Username is available!',
+      error: '❌ Username is already taken',
+    });
+  };
+
+  // Professional arrow function to upload avatar to Firebase Storage
+  const uploadAvatar = async (file, displayName) => {
+    const uploadPromise = async () => {
+      const date = new Date().getTime();
+      const storageRef = ref(storage, `${displayName + date}`);
+
+      await uploadBytesResumable(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+
+      return { photoURL, success: true };
+    };
+
+    return toast.promise(uploadPromise, {
+      pending: '📤 Uploading avatar image...',
+      success: '✅ Avatar uploaded successfully!',
+      error: '⚠️ Avatar upload failed, continuing without avatar',
+    });
+  };
+
+  // Professional arrow function to create Firebase Auth user
+  const createAuthUser = async (email, password) => {
+    const createUserPromise = async () => {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      return res;
+    };
+
+    return toast.promise(createUserPromise, {
+      pending: '🔐 Creating authentication account...',
+      success: '✅ Authentication account created successfully!',
+      error: '❌ Failed to create authentication account',
+    });
+  };
+
+  // Professional arrow function to update user profile
+  const updateUserProfile = async (user, displayName, photoURL) => {
+    const updateProfilePromise = async () => {
+      const profileData = {
+        displayName,
+        ...(photoURL && { photoURL }),
+      };
+
+      await updateProfile(user, profileData);
+      return 'Profile updated successfully';
+    };
+
+    return toast.promise(updateProfilePromise, {
+      pending: '👤 Updating user profile...',
+      success: '✅ Profile updated successfully!',
+      error: '❌ Failed to update profile',
+    });
+  };
+
+  // Professional arrow function to create user documents in Firestore
+  const createUserDocuments = async (user, displayName, email, photoURL) => {
+    const createDocumentsPromise = async () => {
+      // Create user document in Firestore
+      const userData = {
+        uid: user.uid,
+        displayName,
+        email,
+        ...(photoURL && { photoURL }),
+      };
+
+      await setDoc(doc(db, 'users', displayName), userData);
+
+      // Create empty user chats document
+      await setDoc(doc(db, 'userChats', displayName), {});
+
+      return 'User documents created successfully';
+    };
+
+    return toast.promise(createDocumentsPromise, {
+      pending: '📝 Creating user documents...',
+      success: '✅ User documents created successfully!',
+      error: '❌ Failed to create user documents',
+    });
   };
 
   const handleSubmit = async e => {
@@ -155,101 +237,52 @@ const SignUp = () => {
 
     setLoading(true);
 
-    // Check if user already exists in database
-    console.log('🔍 Checking if user exists in database...');
-    const userExists = await checkUserExists(displayName);
-
-    if (userExists) {
-      setErr(true);
-      setErrorInfo(
-        `User "${displayName}" already exists in the database. Please use a different display name or try logging in.`
-      );
-      setLoading(false);
-      return;
-    }
-
     try {
-      console.log('Attempting to create user with:', { email, displayName });
+      // Step 1: Check if user already exists
+      await checkUserExists(displayName);
 
-      //Create user
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(
-        '✅ User created successfully in Firebase Auth:',
-        res.user.uid
+      // Step 2: Create Firebase Auth user
+      const authResult = await createAuthUser(email, password);
+
+      // Step 3: Upload avatar (optional - won't fail registration if it fails)
+      let photoURL = null;
+      try {
+        const avatarResult = await uploadAvatar(file, displayName);
+        photoURL = avatarResult.photoURL;
+      } catch (avatarError) {
+        // Avatar upload failed, but we continue without it
+        // console.warn('Avatar upload failed, continuing without avatar:', avatarError);
+      }
+
+      // Step 4: Update user profile
+      await updateUserProfile(authResult.user, displayName, photoURL);
+
+      // Step 5: Create user documents in Firestore
+      await createUserDocuments(authResult.user, displayName, email, photoURL);
+
+      // Step 6: Show final success message and navigate
+      toast.success(
+        `🎉 Welcome ${displayName}! Your account has been created successfully.`,
+        {
+          autoClose: 3000,
+          position: 'top-center',
+        }
       );
 
-      let photoURL = null;
-      let uploadSuccess = false;
-
-      try {
-        // Attempt to upload avatar
-        const date = new Date().getTime();
-        const storageRef = ref(storage, `${displayName + date}`);
-
-        console.log('Attempting to upload avatar to Firebase Storage...');
-        await uploadBytesResumable(storageRef, file);
-        photoURL = await getDownloadURL(storageRef);
-        uploadSuccess = true;
-        console.log('✅ Avatar uploaded successfully:', photoURL);
-      } catch (storageError) {
-        console.warn(
-          '⚠️ Avatar upload failed, continuing without avatar:',
-          storageError
-        );
-        // Continue without avatar - user can still register
-        uploadSuccess = false;
-      }
-
-      try {
-        // Update profile with or without avatar
-        const profileData = {
-          displayName,
-          ...(photoURL && { photoURL }),
-        };
-
-        await updateProfile(res?.user, profileData);
-        console.log('✅ Profile updated successfully');
-
-        // Create user document in Firestore
-        const userData = {
-          uid: res.user.uid,
-          displayName,
-          email,
-          ...(photoURL && { photoURL }),
-        };
-
-        await setDoc(doc(db, 'users', res?.user.displayName), userData);
-        console.log('✅ User document created in Firestore:', userData);
-
-        // Create empty user chats on firestore
-        await setDoc(doc(db, 'userChats', res.user.displayName), {});
-        console.log('✅ User chats document created');
-
-        // Show success message based on avatar upload result
-        if (uploadSuccess) {
-          console.log('🎉 Registration completed successfully with avatar');
-        } else {
-          console.log('🎉 Registration completed successfully without avatar');
-        }
-
+      // Navigate to home page after a short delay
+      setTimeout(() => {
         navigate('/');
-      } catch (profileError) {
-        console.error(
-          '❌ Error updating profile or creating user data:',
-          profileError
-        );
-        setErr(true);
-        setErrorInfo('Failed to complete registration. Please try again.');
-        setLoading(false);
-      }
+      }, 2000);
     } catch (err) {
-      console.error('❌ Firebase authentication error:', err);
+      console.error('❌ Registration error:', err);
       setErr(true);
 
       if (err.code === 'auth/email-already-in-use') {
         setErrorInfo(
           `Email "${email}" is already registered. Please use a different email or try logging in.`
         );
+      } else if (err.message.includes('Username')) {
+        setErrorInfo(err.message);
       } else {
         setErrorInfo(getFirebaseErrorMessage(err.code));
       }

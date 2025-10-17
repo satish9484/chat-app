@@ -223,8 +223,10 @@
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    background-color: #ffffff;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     position: relative;
+    transition: background-color 0.3s ease;
 
     &:hover {
       background-color: var(--bg-tertiary);
@@ -327,6 +329,16 @@
       background-color: var(--gray-600) !important;
     }
   }
+
+  &.adding-friend-btn {
+    background-color: var(--accent-primary) !important;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  &.added-friend-btn {
+    background-color: var(--success-color) !important;
+  }
 }
 
 // Remove friend button styling
@@ -356,6 +368,11 @@
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
+  }
+
+  &.removing-friend-btn {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 

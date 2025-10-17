@@ -15,7 +15,7 @@
   "plugins": ["react", "react-hooks"],
   "rules": {
     "no-unused-vars": "warn",
-    // "no-console": "warn",
+    "no-console": ["warn", { "allow": ["error"] }],
     "prefer-const": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",

@@ -4,7 +4,9 @@
 // This is the main entry point for all styles
 // It imports the main SCSS file which manages all component styles
 
-@import 'scss/main';
+// React-Toastify styles
+@use 'scss/main.scss';
+@import url('react-toastify/dist/ReactToastify.css');
 
 // ========================================
 // CENTRALIZED COLOR MANAGEMENT

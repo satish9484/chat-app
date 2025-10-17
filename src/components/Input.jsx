@@ -1,4 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 
@@ -25,9 +26,7 @@ const Input = () => {
     img: '',
     imgName: '',
   });
-  const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -50,14 +49,13 @@ const Input = () => {
     });
   };
 
-  // Ensure chat document exists before sending messages
+  // Professional arrow function to ensure chat document exists
   const ensureChatExists = async () => {
-    try {
+    const ensureChatPromise = async () => {
       const chatDoc = doc(db, 'chats', data.chatId);
       const chatSnapshot = await getDoc(chatDoc);
 
       if (!chatSnapshot.exists()) {
-        console.log('Creating chat document:', data.chatId);
         await setDoc(chatDoc, { messages: [] });
 
         // Also create user chat references
@@ -87,283 +85,265 @@ const Input = () => {
           { merge: true }
         );
 
-        console.log('Chat document created successfully');
+        return 'Chat initialized successfully';
       }
-    } catch (error) {
-      console.error('Error ensuring chat exists:', error);
-      throw error;
-    }
+      return 'Chat already exists';
+    };
+
+    return toast.promise(ensureChatPromise, {
+      pending: '💬 Initializing chat...',
+      success: '✅ Chat ready!',
+      error: '❌ Failed to initialize chat',
+    });
+  };
+
+  // Professional arrow function to send text with image
+  const sendTextWithImage = async (text, img, imgName) => {
+    const sendMessagePromise = async () => {
+      setIsUploading(true);
+      setUploadProgress(0);
+      updateUploadingState(true, imgName, 0);
+
+      const storageImageName = `${imgName}${uuid()}`;
+      const storageRef = ref(storage, `ChatImages/${storageImageName}`);
+      const uploadTask = uploadBytesResumable(storageRef, img);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          snapshot => {
+            const progressPercent = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setUploadProgress(progressPercent);
+            updateUploadingState(true, imgName, progressPercent);
+          },
+          error => {
+            console.error('Image upload error:', error);
+            setIsUploading(false);
+            reject(error);
+          },
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              await ensureChatExists();
+
+              await updateDoc(doc(db, 'chats', data.chatId), {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: text,
+                  senderId: currentUser.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                }),
+              });
+
+              // Update last message in userChats
+              await updateDoc(doc(db, 'userChats', currentUser?.uid), {
+                [data?.chatId + '.lastMessage']: {
+                  text: text,
+                  date: serverTimestamp(),
+                },
+                [data?.chatId + '.date']: serverTimestamp(),
+              });
+
+              await updateDoc(doc(db, 'userChats', data?.user?.uid), {
+                [data?.chatId + '.lastMessage']: {
+                  text: text,
+                  date: serverTimestamp(),
+                },
+                [data?.chatId + '.date']: serverTimestamp(),
+              });
+
+              setIsUploading(false);
+              updateUploadingState(false, '', 0);
+              resolve('Message with image sent successfully');
+            } catch (error) {
+              console.error('Error saving message with image:', error);
+              setIsUploading(false);
+              reject(error);
+            }
+          }
+        );
+      });
+    };
+
+    return toast.promise(sendMessagePromise, {
+      pending: '📤 Sending message with image...',
+      success: '✅ Message with image sent!',
+      error: '❌ Failed to send message with image',
+    });
+  };
+
+  // Professional arrow function to send image only
+  const sendImageOnly = async (img, imgName) => {
+    const sendImagePromise = async () => {
+      setIsUploading(true);
+      setUploadProgress(0);
+      updateUploadingState(true, imgName, 0);
+
+      const storageImageName = `${imgName}${uuid()}`;
+      const storageRef = ref(storage, `ChatImages/${storageImageName}`);
+      const uploadTask = uploadBytesResumable(storageRef, img);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          snapshot => {
+            const progressPercent = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setUploadProgress(progressPercent);
+            updateUploadingState(true, imgName, progressPercent);
+          },
+          error => {
+            console.error('Image upload error:', error);
+            setIsUploading(false);
+            reject(error);
+          },
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              await ensureChatExists();
+
+              await updateDoc(doc(db, 'chats', data.chatId), {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text: imgName,
+                  senderId: currentUser.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                }),
+              });
+
+              // Update last message in userChats
+              await updateDoc(doc(db, 'userChats', currentUser?.uid), {
+                [data?.chatId + '.lastMessage']: {
+                  text: imgName,
+                  date: serverTimestamp(),
+                },
+                [data?.chatId + '.date']: serverTimestamp(),
+              });
+
+              await updateDoc(doc(db, 'userChats', data?.user?.uid), {
+                [data?.chatId + '.lastMessage']: {
+                  text: imgName,
+                  date: serverTimestamp(),
+                },
+                [data?.chatId + '.date']: serverTimestamp(),
+              });
+
+              setIsUploading(false);
+              updateUploadingState(false, '', 0);
+              resolve('Image sent successfully');
+            } catch (error) {
+              console.error('Error saving image message:', error);
+              setIsUploading(false);
+              reject(error);
+            }
+          }
+        );
+      });
+    };
+
+    return toast.promise(sendImagePromise, {
+      pending: '🖼️ Sending image...',
+      success: '✅ Image sent!',
+      error: '❌ Failed to send image',
+    });
+  };
+
+  // Professional arrow function to send text only
+  const sendTextOnly = async text => {
+    const sendTextPromise = async () => {
+      await ensureChatExists();
+
+      // Add message to chat
+      await updateDoc(doc(db, 'chats', data.chatId), {
+        messages: arrayUnion({
+          id: uuid(),
+          text: text,
+          senderId: currentUser.uid,
+          date: Timestamp.now(),
+        }),
+      });
+
+      // Update last message in userChats
+      await updateDoc(doc(db, 'userChats', currentUser?.uid), {
+        [data?.chatId + '.lastMessage']: {
+          text: text,
+          date: serverTimestamp(),
+        },
+        [data?.chatId + '.date']: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, 'userChats', data?.user?.uid), {
+        [data?.chatId + '.lastMessage']: {
+          text: text,
+          date: serverTimestamp(),
+        },
+        [data?.chatId + '.date']: serverTimestamp(),
+      });
+
+      return 'Text message sent successfully';
+    };
+
+    return toast.promise(sendTextPromise, {
+      pending: '📝 Sending message...',
+      success: '✅ Message sent!',
+      error: '❌ Failed to send message',
+    });
   };
 
   const updateChatData = async e => {
     if (chatData.imgName === '' && chatData.text === '') {
-      alert('Enter a message');
+      toast.warning('Please enter a message or select an image');
       return;
     }
 
     // Check if user is selected
     if (data.chatId === 'null' || !data.chatId) {
-      alert('Select a User to Send a Message');
+      toast.warning('Please select a user to send a message');
       return;
     }
 
-    //NOTE:  1 - Send text with image
-    if (chatData.text !== '' && chatData.imgName !== '') {
-      // Send Messages with User text and photo
-      console.log('1 - Sending text with image');
-      setIsUploading(true);
-      setUploadProgress(0);
-
-      const text = e.target[0].value;
-      const img = e.target[1].files[0];
-      const imgName = e.target[1].files[0].name;
-      updateUploadingState(true, imgName, 0);
-
-      const storageImageName = `${imgName}${uuid()}`;
-      const storageRef = ref(storage, `ChatImages/${storageImageName}`);
-      const uploadTask = uploadBytesResumable(storageRef, img);
-
-      try {
-        uploadTask.on(
-          'state_changed',
-          snapshot => {
-            const progressPercent = Math.round(
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
-            setUploadProgress(progressPercent);
-            updateUploadingState(true, imgName, progressPercent);
-
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                break;
-              case 'running':
-                console.log(`Upload progress: ${progressPercent}%`);
-                break;
-              default:
-                console.log('Unexpected error while uploading the image');
-            }
-          },
-          error => {
-            console.error('Upload error:', error);
-            setIsUploading(false);
-            throw error;
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log('File available at', downloadURL);
-
-              // Ensure chat document exists first
-              await ensureChatExists();
-
-              await updateDoc(doc(db, 'chats', data.chatId), {
-                messages: arrayUnion({
-                  id: uuid(),
-                  text: text,
-                  senderId: currentUser.uid,
-                  date: Timestamp.now(),
-                  img: downloadURL,
-                }),
-              });
-
-              // Update last message in userChats
-              await updateDoc(doc(db, 'userChats', currentUser?.uid), {
-                [data?.chatId + '.lastMessage']: {
-                  text: text,
-                  date: serverTimestamp(),
-                },
-                [data?.chatId + '.date']: serverTimestamp(),
-              });
-
-              await updateDoc(doc(db, 'userChats', data?.user?.uid), {
-                [data?.chatId + '.lastMessage']: {
-                  text: text,
-                  date: serverTimestamp(),
-                },
-                [data?.chatId + '.date']: serverTimestamp(),
-              });
-
-              console.log('Image with text message sent successfully');
-              setIsUploading(false);
-              updateUploadingState(false, '', 0);
-            } catch (error) {
-              console.error('Error saving message:', error);
-              setIsUploading(false);
-              throw error;
-            }
-          }
-        );
-      } catch (err) {
-        console.error('Upload failed:', err);
-        setErr(true);
-        setIsUploading(false);
-        throw err;
+    try {
+      // Send text with image
+      if (chatData.text !== '' && chatData.imgName !== '') {
+        const text = e.target[0].value;
+        const img = e.target[1].files[0];
+        const imgName = e.target[1].files[0].name;
+        await sendTextWithImage(text, img, imgName);
       }
-    }
-
-    //NOTE:  2 - Send image only
-    else if (chatData.text === '' && chatData.imgName !== '') {
-      //Send Messages with ImageName and Photo
-      console.log('2 - Sending image only');
-      setIsUploading(true);
-      setUploadProgress(0);
-
-      const img = e.target[1].files[0];
-      const imgName = e.target[1].files[0].name;
-      updateUploadingState(true, imgName, 0);
-
-      const storageImageName = `${imgName}${uuid()}`;
-      const storageRef = ref(storage, `ChatImages/${storageImageName}`);
-      const uploadTask = uploadBytesResumable(storageRef, img);
-
-      console.log(img, imgName);
-      try {
-        uploadTask.on(
-          'state_changed',
-          snapshot => {
-            const progressPercent = Math.round(
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
-            setUploadProgress(progressPercent);
-            updateUploadingState(true, imgName, progressPercent);
-
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                break;
-              case 'running':
-                console.log(`Upload progress: ${progressPercent}%`);
-                break;
-              default:
-                console.log('Unexpected error while uploading the image');
-            }
-          },
-          error => {
-            console.error('Upload error:', error);
-            setIsUploading(false);
-            throw error;
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log('File available at', downloadURL);
-
-              // Ensure chat document exists first
-              await ensureChatExists();
-
-              await updateDoc(doc(db, 'chats', data.chatId), {
-                messages: arrayUnion({
-                  id: uuid(),
-                  text: imgName,
-                  senderId: currentUser.uid,
-                  date: Timestamp.now(),
-                  img: downloadURL,
-                }),
-              });
-
-              // Update last message in userChats
-              await updateDoc(doc(db, 'userChats', currentUser?.uid), {
-                [data?.chatId + '.lastMessage']: {
-                  text: imgName,
-                  date: serverTimestamp(),
-                },
-                [data?.chatId + '.date']: serverTimestamp(),
-              });
-
-              await updateDoc(doc(db, 'userChats', data?.user?.uid), {
-                [data?.chatId + '.lastMessage']: {
-                  text: imgName,
-                  date: serverTimestamp(),
-                },
-                [data?.chatId + '.date']: serverTimestamp(),
-              });
-
-              console.log('Image message sent successfully');
-              setIsUploading(false);
-              updateUploadingState(false, '', 0);
-            } catch (error) {
-              console.error('Error saving message:', error);
-              setIsUploading(false);
-              throw error;
-            }
-          }
-        );
-      } catch (err) {
-        console.error('Upload failed:', err);
-        setErr(true);
-        setIsUploading(false);
-        throw err;
+      // Send image only
+      else if (chatData.text === '' && chatData.imgName !== '') {
+        const img = e.target[1].files[0];
+        const imgName = e.target[1].files[0].name;
+        await sendImageOnly(img, imgName);
       }
-    }
-    //NOTE:  3 - Send text only
-    else if (chatData.imgName === '' && chatData.text !== '') {
-      console.log('3 - Sending text only');
-      const text = e.target[0].value;
-
-      try {
-        // Ensure chat document exists first
-        await ensureChatExists();
-
-        // Add message to chat
-        await updateDoc(doc(db, 'chats', data.chatId), {
-          messages: arrayUnion({
-            id: uuid(),
-            text: text,
-            senderId: currentUser.uid,
-            date: Timestamp.now(),
-          }),
-        });
-
-        // Update last message in userChats
-        console.log('Updating lastMessage for chatId:', data?.chatId);
-        console.log('Message text:', text);
-
-        await updateDoc(doc(db, 'userChats', currentUser?.uid), {
-          [data?.chatId + '.lastMessage']: {
-            text: text,
-            date: serverTimestamp(),
-          },
-          [data?.chatId + '.date']: serverTimestamp(),
-        });
-
-        await updateDoc(doc(db, 'userChats', data?.user?.uid), {
-          [data?.chatId + '.lastMessage']: {
-            text: text,
-            date: serverTimestamp(),
-          },
-          [data?.chatId + '.date']: serverTimestamp(),
-        });
-
-        console.log('LastMessage updated successfully');
-
-        console.log('Text message sent successfully');
-      } catch (error) {
-        console.error('Error sending text message:', error);
-        setErr(true);
+      // Send text only
+      else if (chatData.imgName === '' && chatData.text !== '') {
+        const text = e.target[0].value;
+        await sendTextOnly(text);
       }
+    } catch (error) {
+      console.error('Error in updateChatData:', error);
+      throw error;
     }
   };
 
   const handleSubmit = async e => {
-    console.log('We are in');
-
     // Prevent multiple simultaneous uploads
     if (isUploading) {
-      console.log('Upload already in progress, ignoring request');
+      toast.warning('Please wait for current upload to complete');
       return;
     }
 
     setLoading(true);
-    setErr(false);
-    setSuccessMessage('');
     e.preventDefault();
 
     try {
       await updateChatData(e);
-
-      // Show success message
-      setSuccessMessage('Message sent successfully!');
 
       // Clear form after successful send
       setChatData({
@@ -378,19 +358,8 @@ const Input = () => {
       // Reset progress
       setUploadProgress(0);
       updateUploadingState(false, '', 0);
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      setErr(true);
-
-      // Clear error message after 5 seconds
-      setTimeout(() => {
-        setErr(false);
-      }, 5000);
     } finally {
       setLoading(false);
       setIsUploading(false);
@@ -408,37 +377,42 @@ const Input = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const newImage = file.name.split(' ');
-    const newImageWithoutSpace = newImage.join('');
-    const onlyImageName = newImageWithoutSpace.split('.');
+    // Validate file type
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (PNG, JPEG, GIF, or WebP)');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast.error(
+        'File size too large. Please select an image smaller than 10MB'
+      );
+      return;
+    }
+
+    // Clean filename and get extension
+    const fileName = file.name;
+    const cleanFileName = fileName.replace(/\.[^/.]+$/, ''); // Remove extension
 
     setChatData({
       ...chatData,
       img: file,
-      imgName: onlyImageName[0],
-      text: onlyImageName[0], // Display image name in input field
+      imgName: cleanFileName,
+      text: chatData.text || '', // Don't auto-fill text with filename
+    });
+
+    // Show success toast
+    toast.success(`📎 Image "${cleanFileName}" selected successfully!`, {
+      autoClose: 2000,
+      position: 'top-right',
     });
   };
 
   return (
     <div className="input">
-      {/* Notification Messages */}
-      {err && (
-        <div className="notification error-notification">
-          <span className="notification-icon">⚠️</span>
-          <span className="notification-text">
-            Failed to send message. Please try again.
-          </span>
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="notification success-notification">
-          <span className="notification-icon">✓</span>
-          <span className="notification-text">{successMessage}</span>
-        </div>
-      )}
-
       {/* WhatsApp-style Upload Progress */}
       {isUploading && (
         <div className="whatsapp-upload-overlay">
@@ -474,8 +448,8 @@ const Input = () => {
             isUploading
               ? 'Uploading...'
               : chatData.imgName
-                ? `Image: ${chatData.imgName} - Add message (optional)`
-                : 'Type a message...'
+                ? `Image selected: ${chatData.imgName} - Add a message (optional)`
+                : 'Type a message or select an image...'
           }
           onChange={handleChange}
           value={chatData.text}
@@ -485,24 +459,57 @@ const Input = () => {
         <div className="send">
           <input
             type="file"
-            accept="image/png, image/jpeg"
+            accept="image/png, image/jpeg, image/gif, image/webp"
             className="file-input"
             id="file"
             onChange={hadnleImage}
             disabled={isUploading}
+            title="Select an image to share"
           />
           <label
             htmlFor="file"
             className={`file-label ${isUploading ? 'disabled' : ''} ${
               chatData.imgName ? 'has-image' : ''
             }`}
+            title={
+              isUploading
+                ? 'Uploading...'
+                : chatData.imgName
+                  ? `Selected: ${chatData.imgName}`
+                  : 'Click to select an image'
+            }
           >
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCwLypGHmZkQWYbK__Qi19Pc_A5aqyA7Hf_A&usqp=CAU"
-              alt=""
-            />
+            <div className="file-icon">
+              {chatData.imgName ? (
+                <svg
+                  className="image-icon"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                </svg>
+              ) : (
+                <svg
+                  className="attach-icon"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" />
+                </svg>
+              )}
+            </div>
+
             {chatData.imgName && !isUploading && (
-              <span className="image-selected-indicator">✓</span>
+              <div className="file-info">
+                <span className="file-name">{chatData.imgName}</span>
+                <span className="file-status">✓ Selected</span>
+              </div>
+            )}
+
+            {!chatData.imgName && !isUploading && (
+              <div className="file-hint">
+                <span className="hint-text">Attach</span>
+              </div>
             )}
           </label>
           <button type="submit" disabled={loading || isUploading}>

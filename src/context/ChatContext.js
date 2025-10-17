@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
+import { toast } from 'react-toastify';
 import { AuthContext } from './AuthContext';
 
 export const ChatContext = createContext();
@@ -16,13 +17,13 @@ export const ChatContextProvider = ({ children }) => {
   const chatReducer = (state, action) => {
     switch (action.type) {
       case 'CHANGE_USER':
-        console.log('Changing user to:', action.payload);
-        console.log('Current user uid:', currentUser?.uid);
-        console.log('Selected user uid:', action.payload?.uid);
-
         // Validate the user object
         if (!action.payload || !action.payload.uid) {
-          console.error('Invalid user object provided:', action.payload);
+          console.error(
+            'Invalid user selected. Please try again.',
+            action.payload
+          );
+          toast.error('Invalid user selected. Please try again.');
           return state;
         }
 
@@ -37,11 +38,19 @@ export const ChatContextProvider = ({ children }) => {
           uploadingImageName: '',
           uploadProgress: 0,
         };
-        console.log('New chat state:', newState);
+
+        // Show user-friendly toast notification
+        toast.success(
+          `💬 Started chatting with ${action.payload.displayName}`,
+          {
+            autoClose: 2000,
+            position: 'top-center',
+          }
+        );
+
         return newState;
 
       case 'RESET_CHAT':
-        console.log('Resetting chat state');
         return INITIAL_STATE;
 
       case 'SET_UPLOADING':
@@ -61,7 +70,6 @@ export const ChatContextProvider = ({ children }) => {
 
   // Reset chat when current user changes
   useEffect(() => {
-    console.log('Current user changed, resetting chat state');
     dispatch({ type: 'RESET_CHAT' });
   }, [currentUser?.uid]);
 

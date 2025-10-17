@@ -1,5 +1,6 @@
 import { deleteField, doc, updateDoc } from 'firebase/firestore';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { db } from '../firebase';
@@ -19,13 +20,12 @@ const Message = ({ messages, message, id, setData }) => {
   }, [message]);
 
   const handleClick = () => {
-    console.log('Message clicked', id);
     setShowDeleteModal(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    setIsDeleting(true);
-    try {
+  // Professional arrow function to delete message with toast feedback
+  const deleteMessage = async () => {
+    const deleteMessagePromise = async () => {
       await updateDoc(docRef, {
         messages: deleteField(),
       });
@@ -33,11 +33,24 @@ const Message = ({ messages, message, id, setData }) => {
       const remainMessage = messages.filter(item => item.id !== message.id);
 
       setData(remainMessage);
-      console.log(remainMessage);
       await updateDoc(doc(db, 'chats', data.chatId), {
         messages: remainMessage,
       });
 
+      return 'Message deleted successfully';
+    };
+
+    return toast.promise(deleteMessagePromise, {
+      pending: '🗑️ Deleting message...',
+      success: '✅ Message deleted!',
+      error: '❌ Failed to delete message',
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteMessage();
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Error deleting message:', error);

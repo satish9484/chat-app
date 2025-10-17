@@ -1,5 +1,6 @@
 import { doc, onSnapshot } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { db } from '../firebase';
@@ -12,48 +13,50 @@ const Messages = () => {
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log('Messages useEffect triggered with chatId:', data?.chatId);
-    console.log('Current user:', currentUser?.uid);
-    console.log('Selected user:', data?.user?.uid);
-    console.log('Chat context data:', data);
-
     // Clear messages immediately if no valid chatId
     if (!data?.chatId || data?.chatId === 'null') {
-      console.log('No valid chatId, clearing messages');
       setMessages([]);
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
-    console.log('Setting up Firebase listener for chatId:', data.chatId);
 
     const unSub = onSnapshot(
       doc(db, 'chats', data.chatId),
       doc => {
-        console.log('Firebase snapshot received for chatId:', data.chatId);
-        console.log('Document exists:', doc.exists());
-        console.log('Document data:', doc.data());
         if (doc?.exists()) {
           const messagesData = doc?.data()?.messages || [];
-          console.log('Messages received:', messagesData.length, 'messages');
-          console.log('Messages data:', messagesData);
           setMessages(messagesData);
+
+          // Show success toast for new messages
+          if (messagesData.length > 0) {
+            toast.success(`📥 Loaded ${messagesData.length} messages`, {
+              autoClose: 2000,
+              position: 'top-right',
+            });
+          }
         } else {
-          console.log('No chat document exists for chatId:', data.chatId);
           setMessages([]);
+          toast.info('💬 No messages yet. Start the conversation!', {
+            autoClose: 3000,
+            position: 'top-center',
+          });
         }
         setIsLoading(false);
       },
       error => {
         console.error('Firebase listener error:', error);
+        toast.error('❌ Failed to load messages. Please try again.', {
+          autoClose: 4000,
+          position: 'top-right',
+        });
         setMessages([]);
         setIsLoading(false);
       }
     );
 
     return () => {
-      console.log('Cleaning up Firebase listener for chatId:', data.chatId);
       unSub();
     };
   }, [data?.chatId, data?.user?.uid, currentUser?.uid]);
@@ -61,10 +64,6 @@ const Messages = () => {
   const setData = data => {
     setMessages(data);
   };
-
-  console.log('Messages component render - messages count:', messages?.length);
-  console.log('Current chatId:', data?.chatId);
-  console.log('Current user:', data?.user?.displayName);
 
   return (
     <div className="messages">

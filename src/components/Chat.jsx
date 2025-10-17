@@ -9,7 +9,7 @@ import Messages from './Messages';
 const Chat = () => {
   const { data } = useContext(ChatContext);
 
-  console.log('Chat component - Current data:', data);
+  // console.log('Chat component - Current data:', data);
 
   return (
     <div className="chat">

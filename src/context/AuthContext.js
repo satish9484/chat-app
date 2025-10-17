@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState } from 'react';
-import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { createContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { auth } from '../firebase';
 
 export const AuthContext = createContext();
 
@@ -11,7 +12,10 @@ export const AuthContextProvider = ({ children }) => {
     const unsub = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
 
-      console.log('User is alredy login');
+      toast.success('User is alredy login', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
     });
 
     return () => {
