@@ -276,7 +276,7 @@ const Chats = () => {
 
   return (
     <>
-      <div className="overflow-y-auto h-screen p-3 mb-9 pb-20 mt-8">
+      <div className="overflow-y-auto h-screen p-3 pb-20 ">
         {/* Search Input */}
         <div className="search-form">
           <input

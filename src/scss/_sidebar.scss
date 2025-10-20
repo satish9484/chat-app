@@ -73,6 +73,7 @@
   @include glass-effect(0.1, 10px);
   @include flex-between;
   @include responsive-padding(1rem, 1.25rem, 1.5rem);
+  width: 100%;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
   position: fixed;
@@ -83,9 +84,9 @@
   flex-shrink: 0;
   transition: all var(--transition-normal);
   border-right: 1px solid var(--border-color);
-  @include responsive-spacing(width, 100%, 280px, 320px);
-  @include responsive-spacing(min-width, 100%, 280px, 280px);
-  @include responsive-spacing(max-width, 100%, 320px, 400px);
+  // @include responsive-spacing(width, 100%, 280px, 320px);
+  // @include responsive-spacing(min-width, 100%, 280px, 280px);
+  // @include responsive-spacing(max-width, 100%, 320px, 400px);
 
   .navbar-left {
     @include flex-center;
@@ -375,6 +376,7 @@
   bottom: 0;
   left: 0;
   width: 320px;
+  height: 70px;
   min-width: 280px;
   max-width: 400px;
   padding: 1rem 1.5rem;

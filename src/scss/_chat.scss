@@ -3,6 +3,7 @@
 
 // Chat Header - Mobile First Design
 .chat-header {
+  height: 70px;
   @include flex-between;
   @include responsive-padding(1rem, 1.25rem, 1.5rem);
   background: var(--bg-primary);
