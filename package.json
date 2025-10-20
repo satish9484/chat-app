@@ -24,7 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "dev": "set PORT=3000 && react-scripts start --env-file=.env",
-    "build:prod": "NODE_ENV=production react-scripts build",
+    "build": "react-scripts build",
     "lint": "eslint src --ext .js,.jsx --fix",
     "lint:check": "eslint src --ext .js,.jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,css,scss,json,md}\"",

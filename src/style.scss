@@ -9,8 +9,143 @@
 @import url('react-toastify/dist/ReactToastify.css');
 
 // ========================================
-// CENTRALIZED COLOR MANAGEMENT
+// MODERN PROFESSIONAL TYPOGRAPHY SYSTEM
 // ========================================
+
+// Import Google Fonts for professional typography
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// Typography Variables
+:root {
+  // Font Family
+  --font-family-primary:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  --font-family-mono:
+    'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro',
+    monospace;
+
+  // Font Sizes - Professional Scale
+  --text-xs: 0.75rem; // 12px
+  --text-sm: 0.875rem; // 14px
+  --text-base: 1rem; // 16px
+  --text-lg: 1.125rem; // 18px
+  --text-xl: 1.25rem; // 20px
+  --text-2xl: 1.5rem; // 24px
+  --text-3xl: 1.875rem; // 30px
+  --text-4xl: 2.25rem; // 36px
+
+  // Font Weights
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+
+  // Line Heights
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  // Letter Spacing
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+}
+
+// Apply typography to body
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Typography Utility Classes
+.text-xs {
+  font-size: var(--text-xs);
+}
+.text-sm {
+  font-size: var(--text-sm);
+}
+.text-base {
+  font-size: var(--text-base);
+}
+.text-lg {
+  font-size: var(--text-lg);
+}
+.text-xl {
+  font-size: var(--text-xl);
+}
+.text-2xl {
+  font-size: var(--text-2xl);
+}
+.text-3xl {
+  font-size: var(--text-3xl);
+}
+.text-4xl {
+  font-size: var(--text-4xl);
+}
+
+.font-light {
+  font-weight: var(--font-light);
+}
+.font-normal {
+  font-weight: var(--font-normal);
+}
+.font-medium {
+  font-weight: var(--font-medium);
+}
+.font-semibold {
+  font-weight: var(--font-semibold);
+}
+.font-bold {
+  font-weight: var(--font-bold);
+}
+.font-extrabold {
+  font-weight: var(--font-extrabold);
+}
+
+.leading-tight {
+  line-height: var(--leading-tight);
+}
+.leading-snug {
+  line-height: var(--leading-snug);
+}
+.leading-normal {
+  line-height: var(--leading-normal);
+}
+.leading-relaxed {
+  line-height: var(--leading-relaxed);
+}
+.leading-loose {
+  line-height: var(--leading-loose);
+}
+
+.tracking-tighter {
+  letter-spacing: var(--tracking-tighter);
+}
+.tracking-tight {
+  letter-spacing: var(--tracking-tight);
+}
+.tracking-normal {
+  letter-spacing: var(--tracking-normal);
+}
+.tracking-wide {
+  letter-spacing: var(--tracking-wide);
+}
+.tracking-wider {
+  letter-spacing: var(--tracking-wider);
+}
 
 :root {
   // ========================================
@@ -40,10 +175,10 @@
   // BRAND COLORS - Light Theme
   // ========================================
 
-  // Primary Brand Colors
-  --accent-primary: #6366f1;
-  --accent-secondary: #4f46e5;
-  --accent-hover: #5b5bd6;
+  // Primary Brand Colors - Modern Professional Blue
+  --accent-primary: #2563eb;
+  --accent-secondary: #1d4ed8;
+  --accent-hover: #1e40af;
 
   // Status Colors
   --success-color: #10b981;
@@ -62,14 +197,14 @@
   // COMPONENT SPECIFIC COLORS - Light Theme
   // ========================================
 
-  // Chat Interface
+  // Chat Interface - Modern Professional
   --chat-bg: #ffffff;
   --sidebar-bg: #f8fafc;
-  --message-bg: #f3f4f6;
-  --message-sent-bg: #6366f1;
+  --message-bg: #f1f5f9;
+  --message-sent-bg: #2563eb;
   --message-sent-text: #ffffff;
   --input-bg: #ffffff;
-  --input-border: #d1d5db;
+  --input-border: #e2e8f0;
 
   // Forms & Authentication
   --form-bg: #ffffff;
@@ -83,13 +218,13 @@
   --nav-text: #1f2937;
   --nav-border: #e5e7eb;
 
-  // Buttons
-  --btn-primary-bg: #6366f1;
+  // Buttons - Modern Professional
+  --btn-primary-bg: #2563eb;
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: #4f46e5;
-  --btn-secondary-bg: #f3f4f6;
-  --btn-secondary-text: #374151;
-  --btn-secondary-hover: #e5e7eb;
+  --btn-primary-hover: #1d4ed8;
+  --btn-secondary-bg: #f1f5f9;
+  --btn-secondary-text: #475569;
+  --btn-secondary-hover: #e2e8f0;
 
   // ========================================
   // UTILITY COLORS - Light Theme
@@ -141,10 +276,10 @@
   // BRAND COLORS - Dark Theme
   // ========================================
 
-  // Primary Brand Colors
-  --accent-primary: #818cf8;
-  --accent-secondary: #6366f1;
-  --accent-hover: #7c3aed;
+  // Primary Brand Colors - Modern Professional Blue
+  --accent-primary: #3b82f6;
+  --accent-secondary: #2563eb;
+  --accent-hover: #1d4ed8;
 
   // Status Colors
   --success-color: #34d399;
@@ -163,14 +298,14 @@
   // COMPONENT SPECIFIC COLORS - Dark Theme
   // ========================================
 
-  // Chat Interface
-  --chat-bg: #1f2937;
-  --sidebar-bg: #111827;
-  --message-bg: #374151;
-  --message-sent-bg: #6366f1;
+  // Chat Interface - Modern Professional Dark
+  --chat-bg: #1e293b;
+  --sidebar-bg: #0f172a;
+  --message-bg: #334155;
+  --message-sent-bg: #2563eb;
   --message-sent-text: #ffffff;
-  --input-bg: #374151;
-  --input-border: #4b5563;
+  --input-bg: #334155;
+  --input-border: #475569;
 
   // Forms & Authentication
   --form-bg: #374151;
@@ -184,13 +319,13 @@
   --nav-text: #f9fafb;
   --nav-border: #374151;
 
-  // Buttons
-  --btn-primary-bg: #818cf8;
+  // Buttons - Modern Professional Dark
+  --btn-primary-bg: #3b82f6;
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: #6366f1;
-  --btn-secondary-bg: #374151;
-  --btn-secondary-text: #f9fafb;
-  --btn-secondary-hover: #4b5563;
+  --btn-primary-hover: #2563eb;
+  --btn-secondary-bg: #334155;
+  --btn-secondary-text: #f1f5f9;
+  --btn-secondary-hover: #475569;
 
   // ========================================
   // UTILITY COLORS - Dark Theme

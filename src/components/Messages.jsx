@@ -30,12 +30,12 @@ const Messages = () => {
           setMessages(messagesData);
 
           // Show success toast for new messages
-          if (messagesData.length > 0) {
-            toast.success(`📥 Loaded ${messagesData.length} messages`, {
-              autoClose: 2000,
-              position: 'top-right',
-            });
-          }
+          // if (messagesData.length > 0) {
+          //   toast.success(`📥 Loaded ${messagesData.length} messages`, {
+          //     autoClose: 2000,
+          //     position: 'top-right',
+          //   });
+          // }
         } else {
           setMessages([]);
           toast.info('💬 No messages yet. Start the conversation!', {

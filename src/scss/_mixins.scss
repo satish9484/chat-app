@@ -1,31 +1,104 @@
-// Mixins for responsive design and utilities
+// ========================================
+// RESPONSIVE MIXINS - MOBILE FIRST APPROACH
 // ========================================
 
-@mixin mobile {
-  @media screen and (max-width: 480px) {
+// Breakpoint Variables - Mobile First
+$breakpoints: (
+  xs: 0,
+  sm: 480px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  xxl: 1536px,
+);
+
+// Sass Variables for Mixins (fallback for CSS custom properties)
+$transition-normal: 0.3s ease-in-out;
+$radius-lg: 0.5rem;
+$radius-xl: 0.75rem;
+$radius-md: 0.375rem;
+$font-medium: 500;
+$font-semibold: 600;
+$text-sm: 0.875rem;
+$text-base: 1rem;
+$text-xs: 0.75rem;
+$accent-primary: #2563eb;
+$accent-secondary: #1d4ed8;
+$bg-primary: #ffffff;
+$bg-secondary: #f8fafc;
+$bg-tertiary: #f1f5f9;
+$text-primary: #1e293b;
+$text-tertiary: #64748b;
+$border-color: #e2e8f0;
+$border-light: #f1f5f9;
+$shadow-md:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+// Media Query Mixins
+@mixin mobile-only {
+  @media screen and (max-width: #{map-get($breakpoints, sm) - 1px}) {
     @content;
   }
 }
 
-@mixin tablet {
-  @media screen and (max-width: 768px) {
+@mixin mobile-up {
+  @media screen and (min-width: #{map-get($breakpoints, xs)}) {
     @content;
   }
 }
 
-@mixin laptop {
-  @media screen and (max-width: 1200px) {
+@mixin tablet-up {
+  @media screen and (min-width: #{map-get($breakpoints, md)}) {
     @content;
   }
 }
 
-@mixin desktop {
-  @media screen and (min-width: 1201px) {
+@mixin desktop-up {
+  @media screen and (min-width: #{map-get($breakpoints, lg)}) {
     @content;
   }
 }
 
-// Utility mixins
+@mixin large-desktop-up {
+  @media screen and (min-width: #{map-get($breakpoints, xl)}) {
+    @content;
+  }
+}
+
+@mixin extra-large-up {
+  @media screen and (min-width: #{map-get($breakpoints, xxl)}) {
+    @content;
+  }
+}
+
+// Range Mixins
+@mixin mobile-to-tablet {
+  @media screen and (min-width: #{map-get($breakpoints, xs)}) and (max-width: #{map-get($breakpoints, md) - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet-to-desktop {
+  @media screen and (min-width: #{map-get($breakpoints, md)}) and (max-width: #{map-get($breakpoints, lg) - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop-and-up {
+  @media screen and (min-width: #{map-get($breakpoints, lg)}) {
+    @content;
+  }
+}
+
+// ========================================
+// LAYOUT MIXINS
+// ========================================
+
+// Flexbox Mixins
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -38,14 +111,473 @@
   justify-content: space-between;
 }
 
-@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
-  transition: $property $duration $timing;
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
 }
 
-@mixin border-radius($radius: 0.375rem) {
-  border-radius: $radius;
+@mixin flex-column-center {
+  @include flex-column;
+  align-items: center;
+  justify-content: center;
 }
 
-@mixin box-shadow($shadow: 0 2px 4px var(--shadow-color)) {
-  box-shadow: $shadow;
+// Grid Mixins
+@mixin grid-responsive($mobile-cols: 1, $tablet-cols: 2, $desktop-cols: 3) {
+  display: grid;
+  grid-template-columns: repeat($mobile-cols, 1fr);
+  gap: 1rem;
+
+  @include tablet-up {
+    grid-template-columns: repeat($tablet-cols, 1fr);
+    gap: 1.5rem;
+  }
+
+  @include desktop-up {
+    grid-template-columns: repeat($desktop-cols, 1fr);
+    gap: 2rem;
+  }
+}
+
+// ========================================
+// COMPONENT MIXINS
+// ========================================
+
+// Button Mixins
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: $radius-lg;
+  font-weight: $font-medium;
+  font-size: $text-sm;
+  transition: all $transition-normal;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  color: white;
+  box-shadow: var(--shadow-md);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+
+  &:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@mixin button-ghost {
+  @include button-base;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+}
+
+// Input Mixins
+@mixin input-base {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  transition: all var(--transition-normal);
+  outline: none;
+
+  &:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+@mixin input-large {
+  @include input-base;
+  padding: 1rem 1.25rem;
+  font-size: var(--text-base);
+  border-radius: var(--radius-xl);
+}
+
+@mixin input-small {
+  @include input-base;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-md);
+}
+
+// Card Mixins
+@mixin card-base {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-normal);
+}
+
+@mixin card-hover {
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+@mixin card-interactive {
+  @include card-base;
+  @include card-hover;
+  cursor: pointer;
+}
+
+// ========================================
+// RESPONSIVE COMPONENT MIXINS
+// ========================================
+
+// Responsive Padding Mixin
+@mixin responsive-padding($mobile: 1rem, $tablet: 1.5rem, $desktop: 2rem) {
+  padding: $mobile;
+
+  @include tablet-up {
+    padding: $tablet;
+  }
+
+  @include desktop-up {
+    padding: $desktop;
+  }
+}
+
+// Responsive Font Size Mixin
+@mixin responsive-font-size(
+  $mobile: 1rem,
+  $tablet: 1.125rem,
+  $desktop: 1.25rem
+) {
+  font-size: $mobile;
+
+  @include tablet-up {
+    font-size: $tablet;
+  }
+
+  @include desktop-up {
+    font-size: $desktop;
+  }
+}
+
+// Responsive Spacing Mixin
+@mixin responsive-spacing(
+  $property,
+  $mobile: 1rem,
+  $tablet: 1.5rem,
+  $desktop: 2rem
+) {
+  #{$property}: $mobile;
+
+  @include tablet-up {
+    #{$property}: $tablet;
+  }
+
+  @include desktop-up {
+    #{$property}: $desktop;
+  }
+}
+
+// Responsive Grid Mixin
+@mixin responsive-grid(
+  $mobile-cols: 1,
+  $tablet-cols: 2,
+  $desktop-cols: 3,
+  $gap: 1rem
+) {
+  display: grid;
+  grid-template-columns: repeat($mobile-cols, 1fr);
+  gap: $gap;
+
+  @include tablet-up {
+    grid-template-columns: repeat($tablet-cols, 1fr);
+    gap: $gap * 1.5;
+  }
+
+  @include desktop-up {
+    grid-template-columns: repeat($desktop-cols, 1fr);
+    gap: $gap * 2;
+  }
+}
+
+// ========================================
+// CHAT-SPECIFIC MIXINS
+// ========================================
+
+// Chat Input Mixin
+@mixin chat-input-responsive {
+  @include flex-between;
+  @include responsive-padding(1rem, 1.5rem, 2rem);
+  gap: 0.75rem;
+
+  @include mobile-only {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  @include tablet-up {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+// Message Bubble Mixin
+@mixin message-bubble-responsive {
+  max-width: 85%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-xl);
+  word-wrap: break-word;
+
+  @include mobile-only {
+    max-width: 90%;
+    padding: 0.5rem 0.75rem;
+    font-size: var(--text-sm);
+  }
+
+  @include tablet-up {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    font-size: var(--text-base);
+  }
+
+  @include desktop-up {
+    max-width: 70%;
+    padding: 1rem 1.25rem;
+    font-size: var(--text-base);
+  }
+}
+
+// Sidebar Responsive Mixin
+@mixin sidebar-responsive {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+
+  @media screen and (min-width: 768px) {
+    width: 320px;
+    position: relative;
+    transform: translateX(0);
+    height: 100vh;
+  }
+
+  &.sidebar-open {
+    transform: translateX(0);
+  }
+}
+
+// Chat Area Responsive Mixin
+@mixin chat-area-responsive {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  @include tablet-up {
+    width: calc(100% - 320px);
+    margin-left: 320px;
+  }
+}
+
+// ========================================
+// UTILITY MIXINS
+// ========================================
+
+// Truncate Text Mixin
+@mixin truncate-text($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// Aspect Ratio Mixin
+@mixin aspect-ratio($width: 16, $height: 9) {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: percentage($height / $width);
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Glass Effect Mixin
+@mixin glass-effect($opacity: 0.1, $blur: 8px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Hover Lift Mixin
+@mixin hover-lift($lift: -2px, $shadow: var(--shadow-lg)) {
+  transition: all var(--transition-normal);
+
+  &:hover {
+    transform: translateY($lift);
+    box-shadow: $shadow;
+  }
+}
+
+// Hover Scale Mixin
+@mixin hover-scale($scale: 1.05) {
+  transition: all var(--transition-normal);
+
+  &:hover {
+    transform: scale($scale);
+  }
+}
+
+// Focus Ring Mixin
+@mixin focus-ring($color: var(--accent-primary), $opacity: 0.1) {
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($color, $opacity);
+  }
+}
+
+// ========================================
+// ANIMATION MIXINS
+// ========================================
+
+// Fade In Animation Mixin
+@mixin fade-in($duration: 0.3s, $delay: 0s) {
+  opacity: 0;
+  animation: fadeIn $duration ease-out $delay forwards;
+}
+
+// Slide In Animation Mixin
+@mixin slide-in($direction: up, $duration: 0.3s, $delay: 0s) {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideInUp $duration ease-out $delay forwards;
+
+  @if $direction == down {
+    transform: translateY(-20px);
+    animation: slideInDown $duration ease-out $delay forwards;
+  } @else if $direction == left {
+    transform: translateX(20px);
+    animation: slideInLeft $duration ease-out $delay forwards;
+  } @else if $direction == right {
+    transform: translateX(-20px);
+    animation: slideInRight $duration ease-out $delay forwards;
+  }
+}
+
+// Pulse Animation Mixin
+@mixin pulse($duration: 2s) {
+  animation: pulse $duration cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// ========================================
+// KEYFRAMES
+// ========================================
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }

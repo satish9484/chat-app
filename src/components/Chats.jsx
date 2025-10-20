@@ -13,10 +13,11 @@ import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { db } from '../firebase';
 
-const Chats = ({ searchTerm }) => {
+const Chats = () => {
   const [chats, setChats] = useState({});
   const [allUsers, setAllUsers] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [addingFriend, setAddingFriend] = useState(null); // Track which user is being added
   const [removingFriend, setRemovingFriend] = useState(null); // Track which user is being removed
@@ -275,52 +276,71 @@ const Chats = ({ searchTerm }) => {
 
   return (
     <>
-      <div className="overflow-y-auto h-screen p-3 mb-9 pb-20 mt-6">
+      <div className="overflow-y-auto h-screen p-3 mb-9 pb-20 mt-8">
+        {/* Search Input */}
+        <div className="search-form">
+          <input
+            type="text"
+            placeholder="Search for friends..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
         {/* Search Results */}
         {showSearchResults && (
           <div className="search-results">
             <h3>Search Results</h3>
             {filteredUsers.map(user => (
               <div className="userChat" key={user.uid}>
-                <img src={user.photoURL || '/default-avatar.png'} alt="" />
-                <div className="userChatInfo">
-                  <span>{user.displayName}</span>
-                  <p>{user.email}</p>
+                <div className="user-avatar-section">
+                  <img
+                    src={user.photoURL || '/default-avatar.png'}
+                    alt={user.displayName || 'User'}
+                    className="user-avatar"
+                  />
+                  <button
+                    className={`add-friend-btn ${
+                      isAlreadyFriend(user) ? 'already-friends-btn' : ''
+                    } ${addingFriend === user.uid ? 'adding-friend-btn' : ''} ${
+                      addedFriend === user.uid ? 'added-friend-btn' : ''
+                    }`}
+                    onClick={() => !isAlreadyFriend(user) && addFriend(user)}
+                    disabled={
+                      addingFriend === user.uid ||
+                      addedFriend === user.uid ||
+                      isAlreadyFriend(user)
+                    }
+                  >
+                    {addingFriend === user.uid ? (
+                      <div className="loading-spinner">
+                        <div className="spinner"></div>
+                        <span>Adding...</span>
+                      </div>
+                    ) : addedFriend === user.uid ? (
+                      <div className="success-state">
+                        <span>✓ Added</span>
+                      </div>
+                    ) : isAlreadyFriend(user) ? (
+                      <div className="already-friends-state">
+                        <span>✓ Friends</span>
+                      </div>
+                    ) : (
+                      'Add Friend'
+                    )}
+                  </button>
                 </div>
-                <button
-                  className={`add-friend-btn ${
-                    isAlreadyFriend(user) ? 'already-friends-btn' : ''
-                  } ${addingFriend === user.uid ? 'adding-friend-btn' : ''} ${
-                    addedFriend === user.uid ? 'added-friend-btn' : ''
-                  }`}
-                  onClick={() => !isAlreadyFriend(user) && addFriend(user)}
-                  disabled={
-                    addingFriend === user.uid ||
-                    addedFriend === user.uid ||
-                    isAlreadyFriend(user)
-                  }
-                >
-                  {addingFriend === user.uid ? (
-                    <div className="loading-spinner">
-                      <div className="spinner"></div>
-                      <span>Adding...</span>
-                    </div>
-                  ) : addedFriend === user.uid ? (
-                    <div className="success-state">
-                      <span>✓ Added</span>
-                    </div>
-                  ) : isAlreadyFriend(user) ? (
-                    <div className="already-friends-state">
-                      <span>✓ Friends</span>
-                    </div>
-                  ) : (
-                    'Add Friend'
-                  )}
-                </button>
+                <div className="userChatInfo">
+                  <span className="user-name">{user.displayName}</span>
+                  <p className="user-email">{user.email}</p>
+                </div>
               </div>
             ))}
             {filteredUsers.length === 0 && (
-              <p>No users found matching "{searchTerm}"</p>
+              <p className="no-results">
+                No users found matching "{searchTerm}"
+              </p>
             )}
           </div>
         )}

@@ -8,8 +8,7 @@ import { AuthContextProvider } from './context/AuthContext';
 import { ChatContextProvider } from './context/ChatContext';
 import { ThemeProvider } from './context/ThemeContext';
 
-// import Home from "./newDesign/Home";
-
+// import Home from './newDesign/Home';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Suspense fallback={<Loader isSuspense />}>
@@ -22,6 +21,6 @@ root.render(
         </ChatContextProvider>
       </AuthContextProvider>
     </ThemeProvider>
+    {/* <Home /> */}
   </Suspense>
-  // <Home/>
 );

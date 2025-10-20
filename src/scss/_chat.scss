@@ -1,68 +1,236 @@
-// Chat area styling
+// Chat area styling - Modern Professional Design
+@use 'mixins' as *;
+
+// Chat Header - Mobile First Design
+.chat-header {
+  @include flex-between;
+  @include responsive-padding(1rem, 1.25rem, 1.5rem);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+
+  .chat-header-left {
+    @include flex-center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0; // Allow text truncation
+  }
+
+  .chat-header-right {
+    @include flex-center;
+    gap: 0.5rem;
+  }
+
+  // Mobile menu toggle button for chat header
+  .mobile-menu-toggle.chat-header-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+
+    @media screen and (max-width: 767px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:hover {
+      background-color: var(--bg-secondary);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      width: 20px;
+      height: 16px;
+      position: relative;
+
+      span {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background-color: var(--text-primary);
+        border-radius: 1px;
+        transition: all 0.3s ease;
+        transform-origin: center;
+
+        &:nth-child(1) {
+          margin-bottom: 4px;
+        }
+
+        &:nth-child(2) {
+          margin-bottom: 4px;
+        }
+      }
+
+      &.open {
+        span {
+          &:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+          }
+
+          &:nth-child(2) {
+            opacity: 0;
+          }
+
+          &:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+          }
+        }
+      }
+    }
+  }
+
+  // Chat user info
+  .chat-user-info {
+    @include flex-center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+
+    .chat-user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border-light);
+      flex-shrink: 0;
+
+      @media screen and (max-width: 480px) {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .chat-user-details {
+      flex: 1;
+      min-width: 0;
+
+      .chat-user-name {
+        @include responsive-font-size(1rem, 1.125rem, 1.25rem);
+        font-weight: var(--font-semibold);
+        color: var(--text-primary);
+        margin: 0;
+        @include truncate-text(1);
+
+        @media screen and (max-width: 480px) {
+          font-size: 0.875rem;
+        }
+      }
+
+      .chat-user-status {
+        @include responsive-font-size(0.75rem, 0.875rem, 0.875rem);
+        color: var(--text-secondary);
+        margin: 0;
+        margin-top: 0.125rem;
+        @include truncate-text(1);
+
+        @media screen and (max-width: 480px) {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  // Chat actions
+  .chat-actions {
+    @include flex-center;
+    gap: 0.5rem;
+
+    .chat-action-btn {
+      @include flex-center;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: none;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+
+      @media screen and (max-width: 480px) {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      &:hover {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        transform: scale(1.05);
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+
+        @media screen and (max-width: 480px) {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+  }
+}
 
 .chat {
-  flex: 1;
+  flex: 1; // This will take all remaining space after sidebar
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-width: 0;
   position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
 }
 
-// Chat info header
-.chatInfo {
-  background-color: var(--bg-primary);
-  padding: 1rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 75%;
-  z-index: 100;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
+// Chat info header - Replaced by chat-header component above
 
-  span {
-    font-size: 1.5rem;
-    line-height: 2rem;
-    font-weight: 600;
-  }
-
-  .chatIcons {
-    display: flex;
-    gap: 0.5rem;
-
-    img {
-      height: 1.5rem;
-      cursor: pointer;
-    }
-  }
-}
-
-// Messages container
+// Messages container - Modern Professional
 .messages {
-  background-color: var(--bg-secondary);
-  padding: 1rem;
+  background: linear-gradient(
+    180deg,
+    var(--bg-secondary) 0%,
+    var(--bg-primary) 100%
+  );
+  padding: 2rem;
   overflow-y: auto;
-  flex: 1;
+  flex: 1; // This will take all remaining space in chat area
   position: relative;
-  margin-top: 60px;
-  margin-bottom: 60px;
-  height: calc(100vh - 120px);
+  width: 100%; // Full width of chat area
   transition: background-color 0.3s ease;
 
-  // Message styling
+  // Message styling - Modern Professional
   .message {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
     cursor: pointer;
     position: relative;
+    animation: messageSlideIn 0.3s ease-out;
 
     .messageInfo {
       display: flex;
@@ -71,58 +239,199 @@
       position: relative;
 
       img {
-        width: 2.25rem;
-        height: 2.25rem;
+        width: 2.5rem;
+        height: 2.5rem;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #e5e7eb;
+        border: 3px solid var(--white);
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow:
+            0 8px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
       }
     }
 
     .messageContent {
       display: flex;
-      max-width: 24rem;
-      background-color: var(--message-bg);
-      border-radius: 0.75rem;
-      padding: 0.75rem;
+      max-width: 28rem;
+      background-color: var(--white);
+      border-radius: 1.5rem;
+      padding: 1rem 1.25rem;
       gap: 0.75rem;
-      box-shadow: 0 1px 3px var(--shadow-color);
-      border: 1px solid var(--border-color);
+      box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border-light);
       position: relative;
       transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+      }
 
       p {
         color: var(--text-primary);
         margin: 0;
         transition: color 0.3s ease;
+        line-height: 1.6;
+        font-size: 0.95rem;
 
         img {
-          max-width: 100%;
-          border-radius: 0.5rem;
+          max-width: 300px; // Professional max width like WhatsApp/Telegram
+          max-height: 400px; // Professional max height
+          width: auto;
+          height: auto;
+          border-radius: 0.75rem;
+          margin-top: 0.5rem;
+          object-fit: cover; // Ensure proper image scaling
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          display: block; // Ensure proper display
+
+          &:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          // Loading state for images
+          &[src=''],
+          &[src='undefined'] {
+            background: linear-gradient(
+              90deg,
+              var(--bg-tertiary) 25%,
+              var(--bg-secondary) 50%,
+              var(--bg-tertiary) 75%
+            );
+            background-size: 200% 100%;
+            animation: imageLoading 1.5s infinite;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &::before {
+              content: '📷';
+              font-size: 2rem;
+              opacity: 0.5;
+            }
+          }
+        }
+
+        // Special styling for different image types
+        .image-message {
+          padding: 0; // Remove padding for image-only messages
+          background: transparent;
+          border: none;
+          box-shadow: none;
+
+          img {
+            margin-top: 0;
+            border-radius: 1rem; // Slightly more rounded for image-only messages
+          }
+        }
+
+        // Video thumbnail styling
+        .video-thumbnail {
+          position: relative;
+          cursor: pointer;
+
+          &::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+          }
+
+          &:hover::after {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translate(-50%, -50%) scale(1.1);
+          }
         }
       }
     }
 
-    // Owner message styling (sent by current user)
+    // Owner message styling (sent by current user) - Modern Professional
     &.owner {
       justify-content: flex-end;
 
       .messageInfo img {
-        border: 2px solid #6366f1;
+        border: 3px solid var(--accent-primary);
       }
 
       .messageContent {
-        background-color: var(--message-sent-bg);
-        color: var(--message-sent-text);
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 100%
+        );
+        color: var(--white);
         border: 1px solid var(--accent-secondary);
         transition: all 0.3s ease;
+        border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+
+        &:hover {
+          box-shadow:
+            0 10px 15px -3px rgba(37, 99, 235, 0.3),
+            0 4px 6px -2px rgba(37, 99, 235, 0.1);
+        }
 
         p {
-          color: var(--message-sent-text);
+          color: var(--white);
           transition: color 0.3s ease;
         }
       }
     }
+
+    // Incoming message styling
+    &:not(.owner) {
+      .messageContent {
+        border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
+      }
+    }
+  }
+}
+
+// Message animations
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Image loading animation
+@keyframes imageLoading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
@@ -443,5 +752,22 @@
     height: 2rem;
     border-radius: 50%;
     object-fit: cover;
+  }
+}
+
+// Responsive behavior for chat area
+@media screen and (max-width: 768px) {
+  // Responsive image sizing for tablets
+  .message .messageContent p img {
+    max-width: 250px;
+    max-height: 350px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  // Responsive image sizing for mobile
+  .message .messageContent p img {
+    max-width: 200px;
+    max-height: 300px;
   }
 }

@@ -40,13 +40,13 @@ export const ChatContextProvider = ({ children }) => {
         };
 
         // Show user-friendly toast notification
-        toast.success(
-          `💬 Started chatting with ${action.payload.displayName}`,
-          {
-            autoClose: 2000,
-            position: 'top-center',
-          }
-        );
+        // toast.success(
+        //   `💬 Started chatting with ${action.payload.displayName}`,
+        //   {
+        //     autoClose: 2000,
+        //     position: 'top-center',
+        //   }
+        // );
 
         return newState;
 

@@ -1,4 +1,4 @@
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { createContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { auth } from '../firebase';
@@ -12,10 +12,12 @@ export const AuthContextProvider = ({ children }) => {
     const unsub = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
 
-      toast.success('User is alredy login', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
+      if (user) {
+        toast.success('User is already logged in', {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+      }
     });
 
     return () => {
@@ -23,8 +25,24 @@ export const AuthContextProvider = ({ children }) => {
     };
   }, []);
 
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      toast.success('Logged out successfully', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error('Failed to logout', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser }}>
+    <AuthContext.Provider value={{ currentUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
