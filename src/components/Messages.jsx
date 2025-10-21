@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
@@ -65,6 +65,9 @@ const Messages = () => {
     setMessages(data);
   };
 
+  // Memoize messages to prevent unnecessary re-renders
+  const memoizedMessages = useMemo(() => messages, [messages]);
+
   return (
     <div className="messages">
       {/* Loading state */}
@@ -89,10 +92,10 @@ const Messages = () => {
         )}
 
       {/* Messages */}
-      {messages?.map((m, i) => (
+      {memoizedMessages?.map((m, i) => (
         <Message
           message={m}
-          messages={messages}
+          messages={memoizedMessages}
           setData={setData}
           key={m.id}
           id={i}

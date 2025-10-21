@@ -1,4 +1,4 @@
-import { deleteField, doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
@@ -10,6 +10,7 @@ const Message = ({ messages, message, id, setData }) => {
   const { data } = useContext(ChatContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   const docRef = doc(db, 'chats', data.chatId);
 
@@ -26,16 +27,16 @@ const Message = ({ messages, message, id, setData }) => {
   // Professional arrow function to delete message with toast feedback
   const deleteMessage = async () => {
     const deleteMessagePromise = async () => {
-      await updateDoc(docRef, {
-        messages: deleteField(),
-      });
+      // Filter out the message to be deleted
+      const remainingMessages = messages.filter(item => item.id !== message.id);
 
-      const remainMessage = messages.filter(item => item.id !== message.id);
-
-      setData(remainMessage);
+      // Update Firebase with the filtered messages array directly
       await updateDoc(doc(db, 'chats', data.chatId), {
-        messages: remainMessage,
+        messages: remainingMessages,
       });
+
+      // Update local state immediately for smooth UI
+      setData(remainingMessages);
 
       return 'Message deleted successfully';
     };
@@ -49,11 +50,17 @@ const Message = ({ messages, message, id, setData }) => {
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
+    setIsAnimatingOut(true);
+
     try {
+      // Start animation first
+      await new Promise(resolve => setTimeout(resolve, 300)); // Animation duration
+
       await deleteMessage();
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Error deleting message:', error);
+      setIsAnimatingOut(false); // Reset animation state on error
     } finally {
       setIsDeleting(false);
     }
@@ -73,7 +80,7 @@ const Message = ({ messages, message, id, setData }) => {
     <>
       <div
         ref={divRef}
-        className={`message ${message.senderId === currentUser.uid && 'owner'}`}
+        className={`message ${message.senderId === currentUser.uid && 'owner'} ${isAnimatingOut ? 'message-deleting' : ''}`}
       >
         <div className="messageInfo">
           <img
