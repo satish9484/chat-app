@@ -2,12 +2,14 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import PasswordReset from '../components/PasswordReset';
 import { auth } from '../firebase';
 
 const LoginPage = () => {
   const formRef = useRef(null);
   const [err, setErr] = useState(false);
   const [errorInfo, setErrorInfo] = useState('');
+  const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false);
 
   const [user, setUser] = useState({
     email: 'naruto@gmail.com',
@@ -101,6 +103,11 @@ const LoginPage = () => {
   const handleClick = () => {
     setErrorInfo('');
   };
+
+  const handleForgotPassword = () => {
+    setIsPasswordResetOpen(true);
+  };
+
   return (
     <div className="formContainer">
       <div className="formWrapper">
@@ -126,10 +133,25 @@ const LoginPage = () => {
           <button>Sign in</button>
           {err && <span>{errorInfo}</span>}
         </form>
-        <p>
-          You don't have an account? <Link to="/register">Sign Up </Link>
-        </p>
+
+        <div className="login-links">
+          <button
+            type="button"
+            className="forgot-password-link"
+            onClick={handleForgotPassword}
+          >
+            Forgot Password?
+          </button>
+          <p>
+            You don't have an account? <Link to="/register">Sign Up </Link>
+          </p>
+        </div>
       </div>
+
+      <PasswordReset
+        isOpen={isPasswordResetOpen}
+        onClose={() => setIsPasswordResetOpen(false)}
+      />
     </div>
   );
 };

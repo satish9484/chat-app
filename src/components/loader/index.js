@@ -1,9 +1,7 @@
 import React from 'react';
-// import { useSelector } from 'react-redux';
 import './style.scss';
 
 const Loading = ({ isSuspense, children }) => {
-  // const isLoading = useSelector(s => s?.api?.loading);
   const isLoading = false;
 
   return (

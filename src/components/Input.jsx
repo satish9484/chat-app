@@ -414,7 +414,7 @@ const Input = () => {
   return (
     <div className="input">
       {/* WhatsApp-style Upload Progress */}
-      {isUploading && (
+      {/* {isUploading && (
         <div className="whatsapp-upload-overlay">
           <div className="upload-status">
             <div className="upload-spinner">
@@ -434,7 +434,7 @@ const Input = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       <form
         ref={formRef}
@@ -446,7 +446,7 @@ const Input = () => {
           name="text"
           placeholder={
             isUploading
-              ? 'Uploading...'
+              ? 'Sending...'
               : chatData.imgName
                 ? `Image selected: ${chatData.imgName} - Add a message (optional)`
                 : 'Type a message or select an image...'
