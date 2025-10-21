@@ -12,8 +12,6 @@ const Message = ({ messages, message, id, setData }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
-  const docRef = doc(db, 'chats', data.chatId);
-
   const divRef = useRef();
 
   useEffect(() => {

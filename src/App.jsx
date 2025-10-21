@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
 import { AuthContext } from './context/AuthContext.js';
+import AdminPage from './pages/AdminPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import SignUp from './pages/SignUp.jsx';
@@ -38,6 +39,14 @@ function App() {
             }
           />
           <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
       <ToastContainer

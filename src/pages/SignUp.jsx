@@ -1,11 +1,17 @@
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { auth, db, storage } from '../firebase';
 import Add from '../img/addAvatar.png';
+import {
+  getAdminRegistrationMessage,
+  getRedirectPath,
+  getRegularRegistrationMessage,
+  isAdminUser,
+} from '../utils/adminUtils';
 
 const SignUp = () => {
   const formRef = useRef(null);
@@ -113,22 +119,30 @@ const SignUp = () => {
     }
   };
 
-  // Professional arrow function to check if user exists in Firestore database
-  const checkUserExists = async displayName => {
-    const checkUserPromise = async () => {
-      const userDocRef = doc(db, 'users', displayName);
-      const userDoc = await getDoc(userDocRef);
+  // Professional arrow function to check if displayName is unique
+  const checkDisplayNameUnique = async displayName => {
+    const checkDisplayNamePromise = async () => {
+      // Query all users to check if displayName is already taken
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const existingUsers = [];
 
-      if (userDoc.exists()) {
+      usersSnapshot.forEach(doc => {
+        const userData = doc.data();
+        if (userData.displayName === displayName) {
+          existingUsers.push(userData);
+        }
+      });
+
+      if (existingUsers.length > 0) {
         throw new Error(
           `Username "${displayName}" is already taken. Please choose a different username.`
         );
       }
 
-      return `Username "${displayName}" is available!`;
+      return `Username "${displayName}" is available`;
     };
 
-    return toast.promise(checkUserPromise, {
+    return toast.promise(checkDisplayNamePromise, {
       pending: '🔍 Checking username availability...',
       success: '✅ Username is available!',
       error: '❌ Username is already taken',
@@ -191,6 +205,8 @@ const SignUp = () => {
   const createUserDocuments = async (user, displayName, email, photoURL) => {
     const createDocumentsPromise = async () => {
       // Create user document in Firestore
+      // NOTE: Using user.uid as document ID for proper user separation
+      // Previous versions used displayName which caused shared data issues
       const userData = {
         uid: user.uid,
         displayName,
@@ -198,10 +214,10 @@ const SignUp = () => {
         ...(photoURL && { photoURL }),
       };
 
-      await setDoc(doc(db, 'users', displayName), userData);
+      await setDoc(doc(db, 'users', user.uid), userData);
 
       // Create empty user chats document
-      await setDoc(doc(db, 'userChats', displayName), {});
+      await setDoc(doc(db, 'userChats', user.uid), {});
 
       return 'User documents created successfully';
     };
@@ -239,7 +255,7 @@ const SignUp = () => {
 
     try {
       // Step 1: Check if user already exists
-      await checkUserExists(displayName);
+      await checkDisplayNameUnique(displayName);
 
       // Step 2: Create Firebase Auth user
       const authResult = await createAuthUser(email, password);
@@ -260,18 +276,21 @@ const SignUp = () => {
       // Step 5: Create user documents in Firestore
       await createUserDocuments(authResult.user, displayName, email, photoURL);
 
-      // Step 6: Show final success message and navigate
-      toast.success(
-        `🎉 Welcome ${displayName}! Your account has been created successfully.`,
-        {
-          autoClose: 3000,
-          position: 'top-center',
-        }
-      );
+      // Step 6: Check if user is admin and show appropriate message
+      const isAdmin = isAdminUser(email);
+      const successMessage = isAdmin
+        ? getAdminRegistrationMessage(displayName)
+        : getRegularRegistrationMessage(displayName);
 
-      // Navigate to home page after a short delay
+      // Show success message
+      toast.success(successMessage, {
+        autoClose: 3000,
+        position: 'top-center',
+      });
+
+      // Navigate to appropriate page based on user type
       setTimeout(() => {
-        navigate('/');
+        navigate(getRedirectPath(email));
       }, 2000);
     } catch (err) {
       console.error('❌ Registration error:', err);

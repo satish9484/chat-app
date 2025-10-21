@@ -4,6 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PasswordReset from '../components/PasswordReset';
 import { auth } from '../firebase';
+import {
+  getAdminWelcomeMessage,
+  getRedirectPath,
+  getRegularWelcomeMessage,
+  isAdminUser,
+} from '../utils/adminUtils';
 
 const LoginPage = () => {
   const formRef = useRef(null);
@@ -79,15 +85,21 @@ const LoginPage = () => {
     try {
       const user = await loginUser(email, password);
 
-      // Show success message and navigate
-      toast.success(`Welcome back, ${user.displayName || email}!`, {
+      // Check if user is admin and show appropriate message
+      const isAdmin = isAdminUser(user.email);
+      const welcomeMessage = isAdmin
+        ? getAdminWelcomeMessage(user.displayName, user.email)
+        : getRegularWelcomeMessage(user.displayName, user.email);
+
+      // Show success message
+      toast.success(welcomeMessage, {
         autoClose: 2000,
         position: 'top-center',
       });
 
-      // Navigate after a short delay
+      // Navigate to appropriate page based on user type
       setTimeout(() => {
-        navigate('/');
+        navigate(getRedirectPath(user.email));
       }, 1500);
     } catch (error) {
       console.error('Login error:', error);
