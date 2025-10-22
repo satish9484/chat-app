@@ -19,7 +19,7 @@ const Sidebar = ({ isOpen, onToggleSidebar, onCloseSidebar }) => {
   return (
     <div className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
       <Navbar onToggleSidebar={onToggleSidebar} isSidebarOpen={isOpen} />
-      <Chats />
+      <Chats onCloseSidebar={onCloseSidebar} />
 
       {/* Admin Panel Link */}
       {isAdmin && (

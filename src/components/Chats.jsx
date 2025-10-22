@@ -24,7 +24,7 @@ import { getQuickConfig } from '../utils/quickLoggerConfig';
  * - Production-safe logging
  */
 
-const Chats = () => {
+const Chats = ({ onCloseSidebar }) => {
   // Initialize logger with quick configuration
   useEffect(() => {
     log.updateConfig(getQuickConfig());
@@ -169,6 +169,11 @@ const Chats = () => {
     }
 
     dispatch({ type: 'CHANGE_USER', payload: u });
+
+    // Close sidebar on mobile when user is selected
+    if (onCloseSidebar && window.innerWidth <= 767) {
+      onCloseSidebar();
+    }
   };
 
   const addFriend = async user => {
@@ -276,6 +281,11 @@ const Chats = () => {
 
       // Automatically start a chat with the new friend
       dispatch({ type: 'CHANGE_USER', payload: user });
+
+      // Close sidebar on mobile when friend is added and selected
+      if (onCloseSidebar && window.innerWidth <= 767) {
+        onCloseSidebar();
+      }
 
       // Reset success state after 3 seconds
       setTimeout(() => {

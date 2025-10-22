@@ -10,15 +10,26 @@
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 50; // High z-index to stay above content
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
+  // Ensure proper containment
+  isolation: isolate;
 
   .chat-header-left {
     @include flex-center;
     gap: 1rem;
     flex: 1;
     min-width: 0; // Allow text truncation
+    position: relative;
+    z-index: 1; // Ensure proper stacking
+
+    // Mobile-specific adjustments
+    @media screen and (max-width: 767px) {
+      gap: 0.5rem; // Reduce gap on mobile
+      align-items: center;
+      justify-content: flex-start;
+    }
   }
 
   .chat-header-right {
@@ -28,18 +39,22 @@
 
   // Mobile menu toggle button for chat header
   .mobile-menu-toggle.chat-header-toggle {
-    display: none;
+    display: none; // Hidden by default on desktop
     background: none;
     border: none;
-    cursor: pointer;
     padding: 0.5rem;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
     transition: all 0.3s ease;
+    align-items: center;
+    justify-content: center;
 
+    // Show on mobile devices
     @media screen and (max-width: 767px) {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-shrink: 0; // Prevent shrinking
+      order: -1; // Ensure it appears first
+      margin-right: 0.5rem; // Add some spacing
     }
 
     &:hover {
@@ -55,7 +70,8 @@
       display: flex;
       flex-direction: column;
       width: 20px;
-      height: 16px;
+      height: 20px;
+      justify-content: space-around;
       position: relative;
 
       span {
@@ -65,7 +81,7 @@
         background-color: var(--text-primary);
         border-radius: 1px;
         transition: all 0.3s ease;
-        transform-origin: center;
+        position: relative;
 
         &:nth-child(1) {
           margin-bottom: 4px;
@@ -73,6 +89,10 @@
 
         &:nth-child(2) {
           margin-bottom: 4px;
+        }
+
+        &:nth-child(3) {
+          margin-bottom: 0; // No margin for the last span
         }
       }
 
@@ -100,18 +120,46 @@
     gap: 0.75rem;
     flex: 1;
     min-width: 0;
+    position: relative;
+    z-index: 1; // Ensure proper stacking within header
+    // Ensure it doesn't push the toggle button out of view
+    max-width: calc(100% - 4rem); // Leave space for toggle button
 
     .chat-user-avatar {
+      flex-shrink: 0;
       width: 2.5rem;
       height: 2.5rem;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--border-light);
-      flex-shrink: 0;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1; // Ensure proper stacking order
+      display: block; // Ensure proper display
 
-      @media screen and (max-width: 480px) {
+      &:hover {
+        border-color: var(--accent-primary);
+        transform: scale(1.05);
+        z-index: 2; // Higher z-index on hover
+      }
+
+      // Mobile responsive sizing
+      @include mobile-only {
         width: 2rem;
         height: 2rem;
+        border-width: 1px;
+      }
+
+      // Tablet responsive sizing
+      @include tablet-up {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      // Desktop sizing
+      @include desktop-up {
+        width: 2.5rem;
+        height: 2.5rem;
       }
     }
 
@@ -120,11 +168,11 @@
       min-width: 0;
 
       .chat-user-name {
-        @include responsive-font-size(1rem, 1.125rem, 1.25rem);
-        font-weight: var(--font-semibold);
+        font-weight: 600;
         color: var(--text-primary);
-        margin: 0;
-        @include truncate-text(1);
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+        @include truncate-text;
 
         @media screen and (max-width: 480px) {
           font-size: 0.875rem;
@@ -132,11 +180,9 @@
       }
 
       .chat-user-status {
-        @include responsive-font-size(0.75rem, 0.875rem, 0.875rem);
+        font-size: 0.875rem;
         color: var(--text-secondary);
-        margin: 0;
-        margin-top: 0.125rem;
-        @include truncate-text(1);
+        @include truncate-text;
 
         @media screen and (max-width: 480px) {
           font-size: 0.75rem;
@@ -151,19 +197,20 @@
     gap: 0.5rem;
 
     .chat-action-btn {
-      @include flex-center;
-      width: 2.5rem;
-      height: 2.5rem;
       background: none;
       border: none;
-      border-radius: 50%;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
       cursor: pointer;
       color: var(--text-secondary);
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      @media screen and (max-width: 480px) {
-        width: 2rem;
-        height: 2rem;
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
       }
 
       &:hover {
@@ -182,9 +229,6 @@
       }
 
       svg {
-        width: 1.25rem;
-        height: 1.25rem;
-
         @media screen and (max-width: 480px) {
           width: 1rem;
           height: 1rem;
@@ -198,7 +242,8 @@
   flex: 1; // This will take all remaining space after sidebar
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  min-height: 0; // Important for flex children
   min-width: 0;
   position: relative;
   background: linear-gradient(
@@ -210,29 +255,40 @@
 
 // Chat info header - Replaced by chat-header component above
 
-// Messages container - Modern Professional
+// Messages container - Professional WhatsApp/Telegram Style
 .messages {
   background: linear-gradient(
     180deg,
     var(--bg-secondary) 0%,
     var(--bg-primary) 100%
   );
-  padding: 2rem;
+  padding: 1rem;
   overflow-y: auto;
-  flex: 1; // This will take all remaining space in chat area
+  flex: 1;
   position: relative;
-  width: 100%; // Full width of chat area
+  width: 100%;
   transition: background-color 0.3s ease;
+  // Professional chat spacing
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  // Ensure proper containment
+  isolation: isolate;
+  z-index: 1; // Ensure proper stacking order
 
-  // Message styling - Modern Professional
+  // Message styling - Professional Chat Layout
   .message {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     cursor: pointer;
     position: relative;
     animation: messageSlideIn 0.3s ease-out;
     transition: all 0.3s ease;
+    // Professional message width constraints
+    max-width: 100%;
+    width: 100%;
+    // Enhanced vertical alignment for better image display
+    align-items: flex-start;
 
     // Message deletion animation
     &.message-deleting {
@@ -241,72 +297,159 @@
       transform: translateX(-100%) scale(0.8);
     }
 
+    // Owner message styling (sent by current user) - Right aligned like WhatsApp
+    &.owner {
+      justify-content: flex-end;
+
+      .messageInfo {
+        order: 2; // Avatar on the right
+        margin-left: 0.5rem;
+        margin-right: 0;
+      }
+
+      .messageContent {
+        order: 1; // Message content on the left
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 100%
+        );
+        color: var(--white);
+        border: 1px solid var(--accent-secondary);
+        border-radius: 1.5rem 1.5rem 0.5rem 1.5rem; // WhatsApp style tail
+        max-width: 70%; // Professional max width
+        margin-right: 0.5rem;
+
+        &:hover {
+          box-shadow:
+            0 10px 15px -3px rgba(37, 99, 235, 0.3),
+            0 4px 6px -2px rgba(37, 99, 235, 0.1);
+        }
+
+        p {
+          color: var(--white);
+          margin: 0;
+          line-height: 1.5;
+          font-size: 0.95rem;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+
+    // Incoming message styling - Left aligned like WhatsApp
+    &:not(.owner) {
+      justify-content: flex-start;
+
+      .messageInfo {
+        order: 1; // Avatar on the left
+        margin-right: 0.5rem;
+        margin-left: 0;
+      }
+
+      .messageContent {
+        order: 2; // Message content on the right
+        background-color: var(--white);
+        color: var(--text-primary);
+        border: 1px solid var(--border-light);
+        border-radius: 1.5rem 1.5rem 1.5rem 0.5rem; // WhatsApp style tail
+        max-width: 70%; // Professional max width
+        margin-left: 0.5rem;
+
+        &:hover {
+          box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        p {
+          color: var(--text-primary);
+          margin: 0;
+          line-height: 1.5;
+          font-size: 0.95rem;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+
     .messageInfo {
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
+      flex-shrink: 0; // Prevent avatar from shrinking
 
       img {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2rem;
+        height: 2rem;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid var(--white);
-        box-shadow:
-          0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 2px solid var(--white);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        position: relative;
+        z-index: 1; // Ensure proper stacking order
+        display: block; // Ensure proper display
 
         &:hover {
           transform: scale(1.05);
-          box-shadow:
-            0 8px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+          z-index: 2; // Higher z-index on hover
         }
       }
     }
 
     .messageContent {
       display: flex;
-      max-width: 28rem;
-      background-color: var(--white);
-      border-radius: 1.5rem;
-      padding: 1rem 1.25rem;
-      gap: 0.75rem;
-      box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      border: 1px solid var(--border-light);
+      flex-direction: column;
+      padding: 0.75rem 1rem;
+      gap: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       position: relative;
       transition: all 0.3s ease;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      // Center content vertically for better image display
+      justify-content: center;
+      align-items: center;
+      // Ensure container adapts to content
+      min-width: 0; // Allow shrinking
+      max-width: 100%; // Don't exceed container
+      // Dynamic sizing based on content
+      width: fit-content; // Adapt to content size
+      max-width: 70%; // But don't exceed 70% of parent
 
-      &:hover {
-        box-shadow:
-          0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: translateY(-1px);
-      }
-
+      // Professional responsive image styling
       p {
-        color: var(--text-primary);
         margin: 0;
         transition: color 0.3s ease;
-        line-height: 1.6;
-        font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        // Center text content for better visual balance
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         img {
-          max-width: 300px; // Professional max width like WhatsApp/Telegram
-          max-height: 400px; // Professional max height
-          width: auto;
-          height: auto;
+          // Professional responsive image sizing that adapts to message container
+          max-width: 100%;
+          width: 100%; // Take full width of container
+          height: auto; // Maintain aspect ratio
+          max-height: 300px; // Reasonable max height
+          min-height: 150px; // Ensure minimum visibility
           border-radius: 0.75rem;
-          margin-top: 0.5rem;
-          object-fit: cover; // Ensure proper image scaling
+          margin: 0.5rem auto 0; // Center horizontally and add top margin
+          object-fit: cover; // Ensure image fills container properly
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          display: block; // Ensure proper display
+          display: block;
+          // Center the image within its container
+          align-self: center;
+          // Ensure image is always visible and properly sized
+          background-color: var(--bg-tertiary); // Fallback background
 
           &:hover {
             transform: scale(1.02);
@@ -324,113 +467,218 @@
             );
             background-size: 200% 100%;
             animation: imageLoading 1.5s infinite;
-            min-height: 200px;
+            min-height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
 
             &::before {
               content: '📷';
-              font-size: 2rem;
+              font-size: 1.5rem;
               opacity: 0.5;
             }
           }
-        }
 
-        // Special styling for different image types
-        .image-message {
-          padding: 0; // Remove padding for image-only messages
-          background: transparent;
-          border: none;
-          box-shadow: none;
+          // Responsive image sizing for different screen sizes
+          @include mobile-only {
+            max-height: 250px;
+            min-height: 120px; // Smaller minimum on mobile
+            border-radius: 0.5rem;
+            width: 100%; // Full width on mobile
+          }
 
-          img {
-            margin-top: 0;
-            border-radius: 1rem; // Slightly more rounded for image-only messages
+          @include tablet-up {
+            max-height: 300px;
+            min-height: 150px; // Medium minimum on tablet
+            border-radius: 0.75rem;
+            width: 100%; // Full width on tablet
+          }
+
+          @include desktop-up {
+            max-height: 350px;
+            min-height: 180px; // Larger minimum on desktop
+            border-radius: 1rem;
+            width: 100%; // Full width on desktop
+          }
+
+          // Special styling for vertical images
+          &[style*='aspect-ratio'] {
+            // Detect vertical images and enhance their display
+            max-height: 500px; // Allow taller vertical images
+            border-radius: 1rem; // More rounded for vertical images
+          }
+
+          // Enhanced styling for portrait/vertical images
+          &.vertical-image {
+            max-height: 500px;
+            min-height: 250px; // Ensure vertical images are clearly visible
+            width: 100%; // Take full width
+            height: auto; // Maintain aspect ratio
+            border-radius: 1rem;
+            margin: 0.75rem auto; // More centered spacing
+            object-fit: cover; // Fill container properly
+            background-color: var(--bg-tertiary); // Fallback background
           }
         }
+      }
 
-        // Video thumbnail styling
-        .video-thumbnail {
-          position: relative;
-          cursor: pointer;
+      // Image-only message styling
+      &.image-message {
+        padding: 0.5rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        // Enhanced vertical centering for image-only messages
+        justify-content: center;
+        align-items: center;
+        min-height: 200px; // Ensure minimum height for proper centering
+        display: flex;
+        flex-direction: column;
+        // Adaptive sizing for image-only messages
+        width: fit-content; // Adapt to image size
+        max-width: 80%; // Allow more width for images
+        min-width: 200px; // Ensure minimum width for visibility
 
-          &::after {
-            content: '▶';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-          }
+        img {
+          margin-top: 0;
+          border-radius: 1rem;
+          // Dynamic sizing for image-only messages
+          width: 100%; // Take full width of message bubble
+          height: auto; // Maintain aspect ratio
+          max-height: 400px; // Allow taller images for image-only messages
+          min-height: 200px; // Ensure good visibility
+          object-fit: cover; // Fill container while maintaining aspect ratio
+          // Center the image within the message bubble
+          align-self: center;
+          margin: 0 auto;
+          // Ensure proper display
+          display: block;
+          background-color: var(--bg-tertiary); // Fallback background
+        }
 
-          &:hover::after {
-            background: rgba(0, 0, 0, 0.8);
-            transform: translate(-50%, -50%) scale(1.1);
-          }
+        // Text content in image messages
+        p {
+          text-align: center;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: var(--text-primary);
+        }
+      }
+
+      // Video thumbnail styling
+      .video-thumbnail {
+        position: relative;
+        cursor: pointer;
+
+        &::after {
+          content: '▶';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0, 0, 0, 0.7);
+          color: white;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          transition: all 0.3s ease;
+        }
+
+        &:hover::after {
+          background: rgba(0, 0, 0, 0.8);
+          transform: translate(-50%, -50%) scale(1.1);
         }
       }
     }
 
-    // Owner message styling (sent by current user) - Modern Professional
-    &.owner {
-      justify-content: flex-end;
+    // Responsive adjustments for mobile
+    @include mobile-only {
+      .messageContent {
+        max-width: 85%; // Allow more width on mobile
+        padding: 0.5rem 0.75rem;
+        // Enhanced centering for mobile
+        justify-content: center;
+        align-items: center;
+      }
 
       .messageInfo img {
-        border: 3px solid var(--accent-primary);
+        width: 1.75rem;
+        height: 1.75rem;
       }
 
-      .messageContent {
-        background: linear-gradient(
-          135deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
-        color: var(--white);
-        border: 1px solid var(--accent-secondary);
-        transition: all 0.3s ease;
-        border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+      // Better image centering on mobile
+      &.image-message {
+        min-height: 150px; // Smaller minimum height on mobile
 
-        &:hover {
-          box-shadow:
-            0 10px 15px -3px rgba(37, 99, 235, 0.3),
-            0 4px 6px -2px rgba(37, 99, 235, 0.1);
-        }
-
-        p {
-          color: var(--white);
-          transition: color 0.3s ease;
+        img {
+          max-height: 300px; // Smaller max height on mobile
+          min-height: 120px; // Smaller minimum on mobile
+          width: 100%; // Full width on mobile
         }
       }
     }
 
-    // Incoming message styling
-    &:not(.owner) {
+    // Tablet adjustments
+    @include tablet-up {
       .messageContent {
-        border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
+        max-width: 60%; // Slightly more constrained on tablet
       }
+    }
+
+    // Desktop adjustments
+    @include desktop-up {
+      .messageContent {
+        max-width: 50%; // More constrained on desktop for better readability
+      }
+    }
+  }
+
+  // Loading state styling
+  .loading-state {
+    justify-content: center;
+    margin: 2rem 0;
+
+    .messageContent {
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-style: italic;
+      text-align: center;
+      padding: 1rem;
+      border-radius: 1rem;
+      max-width: 200px;
+    }
+  }
+
+  // Empty state styling
+  .empty-state {
+    justify-content: center;
+    margin: 2rem 0;
+
+    .messageContent {
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px dashed var(--border-color);
+      max-width: 300px;
     }
   }
 }
 
-// Message animations
+// Professional Message Animations
 @keyframes messageSlideIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -445,13 +693,24 @@
   }
 }
 
-// Image loading animation
 @keyframes imageLoading {
   0% {
-    background-position: -200% 0;
+    background-position: 200% 0;
   }
   100% {
-    background-position: 200% 0;
+    background-position: -200% 0;
+  }
+}
+
+// Professional image hover effects
+@keyframes imageHover {
+  from {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -460,16 +719,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-image {
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  height: 200px;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   border-radius: 0.5rem;
@@ -496,9 +755,10 @@
 
 .upload-progress-indicator {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 1rem;
   background-color: rgba(37, 211, 102, 0.1);
   border-radius: 0.5rem;
   border: 1px solid rgba(37, 211, 102, 0.2);
@@ -509,8 +769,8 @@
   gap: 4px;
 
   span {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     background-color: #25d366;
     border-radius: 50%;
     animation: skeletonBounce 1.4s ease-in-out infinite both;
@@ -530,14 +790,16 @@
 }
 
 .progress-text {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #25d366;
   font-weight: 500;
 }
 
 // Skeleton Animations
 @keyframes skeletonPulse {
-  0%,
+  0% {
+    opacity: 1;
+  }
   100% {
     opacity: 1;
   }
@@ -584,24 +846,21 @@
 }
 
 .delete-modal {
-  background-color: var(--bg-primary);
-  border-radius: 12px;
-  padding: 0;
+  background: var(--bg-primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
   max-width: 400px;
   width: 90%;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--border-color);
   animation: slideUp 0.3s ease-out;
 }
 
 .modal-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 1.5rem 0 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  margin-bottom: 1rem;
 
   h3 {
     margin: 0;
@@ -614,13 +873,13 @@
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: var(--text-secondary);
     cursor: pointer;
+    color: var(--text-secondary);
     padding: 0.25rem;
     border-radius: 0.25rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 
-    &:hover:not(:disabled) {
+    &:hover {
       background-color: var(--bg-secondary);
       color: var(--text-primary);
     }
@@ -633,8 +892,8 @@
 }
 
 .modal-content {
-  padding: 1.5rem;
   text-align: center;
+  margin-bottom: 1.5rem;
 
   .warning-icon {
     font-size: 3rem;
@@ -643,36 +902,33 @@
 
   p {
     margin: 0 0 0.5rem 0;
-    color: var(--text-primary);
     font-size: 1rem;
+    color: var(--text-primary);
     line-height: 1.5;
   }
 
   .warning-text {
-    color: var(--text-warning);
     font-size: 0.875rem;
-    font-weight: 500;
+    color: var(--text-secondary);
   }
 }
 
 .modal-actions {
   display: flex;
   gap: 0.75rem;
-  padding: 0 1.5rem 1.5rem 1.5rem;
   justify-content: flex-end;
 
   button {
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
     font-weight: 500;
-    font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     border: none;
-    min-width: 80px;
+    font-size: 0.875rem;
 
     &:disabled {
-      opacity: 0.7;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
@@ -688,31 +944,30 @@
   }
 
   .delete-btn {
-    background-color: var(--danger-color);
-    color: #ffffff;
+    background-color: #ef4444;
+    color: white;
 
     &:hover:not(:disabled) {
-      background-color: var(--danger-hover);
+      background-color: #dc2626;
+    }
+  }
+
+  .loading-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
   }
 }
 
-.loading-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-// Modal Animations
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -725,53 +980,20 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
-  }
-}
-
-// Additional message utilities
-.message-bubble {
-  max-width: 24rem;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-
-  &.incoming {
-    background-color: #ffffff;
-    color: #374151;
-  }
-
-  &.outgoing {
-    background-color: #6366f1;
-    color: #ffffff;
-  }
-}
-
-.message-avatar {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    object-fit: cover;
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Navigate,
   Route,
@@ -12,9 +12,18 @@ import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import SignUp from './pages/SignUp.jsx';
 import './style.scss';
+import { initViewportSystem } from './utils/viewportUtils.js';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
+
+  // Initialize viewport system for adaptive layout
+  useEffect(() => {
+    const cleanup = initViewportSystem();
+
+    // Cleanup on unmount
+    return cleanup;
+  }, []);
 
   const ProtectedRoute = ({ children }) => {
     if (!currentUser) {

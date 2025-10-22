@@ -11,12 +11,25 @@ const Message = ({ messages, message, id, setData }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [isVerticalImage, setIsVerticalImage] = useState(false);
 
   const divRef = useRef();
+  const imgRef = useRef();
 
   useEffect(() => {
     divRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [message]);
+
+  // Check if image is vertical/portrait
+  useEffect(() => {
+    if (message.img && imgRef.current) {
+      const img = imgRef.current;
+      img.onload = () => {
+        const aspectRatio = img.naturalHeight / img.naturalWidth;
+        setIsVerticalImage(aspectRatio > 1.2); // Consider vertical if height > 1.2x width
+      };
+    }
+  }, [message.img]);
 
   const handleClick = () => {
     setShowDeleteModal(true);
@@ -90,10 +103,21 @@ const Message = ({ messages, message, id, setData }) => {
             alt=""
           />
         </div>
-        <div className="messageContent" onClick={handleClick}>
+        <div
+          className={`messageContent ${!message.text && message.img ? 'image-message' : ''} ${isVerticalImage ? 'vertical-image' : ''}`}
+          onClick={handleClick}
+        >
           <p>
             {message.text}
-            {message.img && <img src={message.img} alt="" />}
+            {message.img && (
+              <img
+                ref={imgRef}
+                src={message.img}
+                alt="Shared image"
+                loading="lazy"
+                className={isVerticalImage ? 'vertical-image' : ''}
+              />
+            )}
           </p>
         </div>
       </div>
