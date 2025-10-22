@@ -113,7 +113,7 @@ const Message = ({ messages, message, id, setData }) => {
               <img
                 ref={imgRef}
                 src={message.img}
-                alt="Shared image"
+                alt="Shared content"
                 loading="lazy"
                 className={isVerticalImage ? 'vertical-image' : ''}
               />
