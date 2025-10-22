@@ -1,5 +1,8 @@
-// Responsive media queries and theme preferences
 // ========================================
+// RESPONSIVE: MEDIA QUERIES AND THEME PREFERENCES
+// ========================================
+
+@use 'foundation' as *;
 
 // Dark mode media queries
 @media (prefers-color-scheme: dark) {
@@ -28,17 +31,25 @@
 
 // Additional responsive breakpoints
 @media screen and (max-width: 320px) {
-  // Extra small devices
-  .formContainer .formWrapper {
-    padding: 15px 30px;
-    width: 90%;
+  .container {
+    padding: 0.5rem;
   }
 }
 
 @media screen and (min-width: 1920px) {
-  // Large desktop screens
-  .home .container {
+  .container {
     max-width: 1920px;
     margin: 0 auto;
+  }
+}
+
+// Print styles
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
   }
 }

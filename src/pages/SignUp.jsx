@@ -463,7 +463,10 @@ const SignUp = () => {
           )}
         </form>
         <p>
-          You do have an account? <Link to="/login">Login</Link>
+          You do have an account?{' '}
+          <Link className="link" to="/login">
+            Login
+          </Link>
         </p>
       </div>
     </div>

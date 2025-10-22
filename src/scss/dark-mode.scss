@@ -1,0 +1,44 @@
+// ========================================
+// DARK MODE: THEME SWITCHING
+// ========================================
+
+@use 'foundation' as *;
+
+// Dark mode toggle styles
+.dark-mode-toggle {
+  @include flex-center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--text-primary);
+    transition: color var(--transition-normal);
+  }
+}
+
+// Dark mode specific styles
+[data-theme='dark'] {
+  .dark-mode-toggle {
+    &:hover {
+      background: var(--bg-tertiary);
+    }
+  }
+}
+
+// Theme transition
+* {
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal),
+    border-color var(--transition-normal);
+}

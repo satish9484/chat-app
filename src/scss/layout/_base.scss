@@ -1,5 +1,8 @@
-// Layout and base styles
 // ========================================
+// LAYOUT: BASE LAYOUT STYLES
+// ========================================
+
+@use '../foundation' as *;
 
 // Base reset
 * {
@@ -18,9 +21,11 @@ body,
 
 // Body styling
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -49,7 +54,7 @@ body {
     transition: background-color 0.3s ease;
 
     // Responsive adjustments
-    @media screen and (max-width: 768px) {
+    @include mobile-only {
       width: 100%;
       height: 100%;
       border-radius: 0;

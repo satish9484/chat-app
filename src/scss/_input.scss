@@ -1,5 +1,5 @@
 // Input area styling - Mobile First Responsive Design
-@use 'mixins' as *;
+@use 'foundation' as *;
 .input {
   @include glass-effect(0.05, 10px);
   border-top: 1px solid var(--border-color);

@@ -1,24 +1,32 @@
-// Main SCSS file - uses all modules
-// This file is used by style.scss as the main entry point
+// ========================================
+// MAIN SCSS FILE - MODERN SASS ARCHITECTURE
+// Using @use and @forward for better organization
+// ========================================
 
-// use base styles first
-@use 'layout';
-@use 'mixins' as *;
-@use 'responsive';
+// 1. FOUNDATION LAYER - Variables, Mixins, Functions
+@use 'foundation' as *;
 
-// use utility classes
-@use 'utilities';
+// 2. UTILITIES LAYER - Helper classes
+@use 'utilities' as *;
 
-// use component styles
-@use 'sidebar';
-@use 'chat';
-@use 'input';
-@use 'avatars';
-@use 'message';
-@use 'dark-mode';
-@use 'forms';
-@use 'modal';
-@use 'admin';
+// 3. LAYOUT LAYER - Page structure
+@use 'layout' as *;
+
+// 4. RESPONSIVE LAYER - Media queries
+@use 'responsive' as *;
+
+// 5. DARK MODE LAYER - Theme switching
+@use 'dark-mode' as *;
+
+// 6. LEGACY COMPONENTS - Existing components
+@use 'components/forms' as *;
+@use 'sidebar' as *;
+@use 'chat' as *;
+@use 'input' as *;
+@use 'avatars' as *;
+@use 'message' as *;
+@use 'modal' as *;
+@use 'admin' as *;
 
 // ========================================
 // MODERN PROFESSIONAL VISUAL EFFECTS
@@ -71,10 +79,7 @@
 
 // Modern Glass Effect
 .glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(var(--blur-md));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: var(--shadow-lg);
+  @include glass-effect(0.1, 8px);
 }
 
 // Professional Hover Effects
@@ -103,17 +108,9 @@
   }
 }
 
-// Modern Button Styles
+// Modern Button Styles using mixins
 .btn-modern {
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
-  font-size: var(--text-sm);
-  transition: all var(--transition-normal);
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  @include button-base;
 
   &::before {
     content: '';
@@ -165,18 +162,9 @@
   }
 }
 
-// Modern Card Styles
+// Modern Card Styles using mixins
 .card-modern {
-  background: var(--bg-primary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
-  transition: all var(--transition-normal);
-
-  &:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-  }
+  @include card(1.5rem);
 }
 
 // Professional Loading States
@@ -200,13 +188,9 @@
   }
 }
 
-// Modern Focus States
+// Modern Focus States using mixins
 .focus-ring {
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    border-color: var(--accent-primary);
-  }
+  @include focus-ring();
 }
 
 // Professional Animations

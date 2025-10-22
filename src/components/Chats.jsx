@@ -1,5 +1,4 @@
 import {
-  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -12,8 +11,26 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { db } from '../firebase';
+import { log, MODULE_FLAGS } from '../utils/logger';
+import { getQuickConfig } from '../utils/quickLoggerConfig';
+
+/**
+ * Chats Component - Manages friend list and recent chats
+ *
+ * Uses professional logging system with granular control:
+ * - Individual module flags for specific functions
+ * - Log grouping for better organization
+ * - Performance tracking
+ * - Production-safe logging
+ */
 
 const Chats = () => {
+  // Initialize logger with quick configuration
+  useEffect(() => {
+    log.updateConfig(getQuickConfig());
+    log.info(MODULE_FLAGS.CHAT, '🚀 Chats component initialized');
+  }, []);
+
   const [chats, setChats] = useState({});
   const [allUsers, setAllUsers] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -29,92 +46,104 @@ const Chats = () => {
   const { dispatch } = useContext(ChatContext);
 
   const getFriends = useCallback(async () => {
+    log.timeStart(MODULE_FLAGS.GET_FRIENDS, 'getFriends');
+
     try {
-      `// console.log`('🔍 Loading friends for user:', currentUser.uid);
+      log.debug(
+        MODULE_FLAGS.GET_FRIENDS,
+        'Loading friends for user:',
+        currentUser.uid
+      );
+
       const friendsDoc = doc(db, 'friends', currentUser.uid);
       const friendsSnapshot = await getDoc(friendsDoc);
 
-      // console.log('Friends document exists:', friendsSnapshot.exists());
+      log.debug(
+        MODULE_FLAGS.GET_FRIENDS,
+        'Friends document exists:',
+        friendsSnapshot.exists()
+      );
 
       if (friendsSnapshot.exists()) {
         const friendsData = friendsSnapshot.data();
-        // console.log('Friends data:', friendsData);
+        log.debug(MODULE_FLAGS.GET_FRIENDS, 'Friends data:', friendsData);
         const friendsList = friendsData.friendsList || [];
-        // // console.log('Friends list loaded:', friendsList);
-        // // console.log('Friends count:', friendsList.length);
+        log.debug(
+          MODULE_FLAGS.GET_FRIENDS,
+          'Friends list loaded:',
+          friendsList
+        );
+        log.debug(
+          MODULE_FLAGS.GET_FRIENDS,
+          'Friends count:',
+          friendsList.length
+        );
         setFriends(friendsList);
+        log.firebase('READ', 'friends', currentUser.uid, true);
       } else {
-        // console.log('No friends document found for user:', currentUser.uid);
-        // console.log('Creating empty friends list');
+        log.debug(
+          MODULE_FLAGS.GET_FRIENDS,
+          'No friends document found for user:',
+          currentUser.uid
+        );
+        log.debug(MODULE_FLAGS.GET_FRIENDS, 'Creating empty friends list');
         setFriends([]);
+        log.firebase(
+          'READ',
+          'friends',
+          currentUser.uid,
+          false,
+          'Document not found'
+        );
       }
     } catch (error) {
-      // console.error('Error getting friends:', error);
+      log.error(MODULE_FLAGS.GET_FRIENDS, 'Error getting friends:', error);
       setFriends([]);
+    } finally {
+      log.timeEnd(MODULE_FLAGS.GET_FRIENDS, 'getFriends');
     }
   }, [currentUser?.uid]);
 
   useEffect(() => {
     const getChats = () => {
-      // console.log('🚀 Setting up Firebase listener for user:', currentUser.uid);
-
       const unsub = onSnapshot(
         doc(db, 'userChats', currentUser.uid),
         doc => {
           const chatData = doc.data();
-
-          // console.group('🔥 Firebase Listener Triggered');
-          // console.log('Document exists:', doc.exists());
-          // console.log('Chat data received:', chatData);
-          // console.log('Chat data keys:', Object.keys(chatData || {}));
-          // console.log('Chat data entries:', Object.entries(chatData || {}));
-
-          // Check for lastMessage entries specifically
-          // console.group('📝 LastMessage Entries');
-          Object.entries(chatData || {}).forEach(([key, value]) => {
-            if (key.includes('lastMessage')) {
-              // console.log(`Found lastMessage key: ${key}`, value);
-            }
-          });
-          // console.groupEnd();
-
-          //  console.groupEnd();
           setChats(chatData || {});
         },
         error => {
-          console.error('❌ Firebase listener error:', error);
+          log.error(
+            MODULE_FLAGS.FIREBASE,
+            '❌ Firebase listener error:',
+            error
+          );
         }
       );
 
       return () => {
-        // // console.log('🧹 Cleaning up Firebase listener');
         unsub();
       };
     };
 
     const getAllUsers = async () => {
       try {
-        // console.log('🔍 Loading all users, current user:', currentUser?.uid);
         const querySnapshot = await getDocs(collection(db, 'users'));
         const users = [];
         querySnapshot.forEach(doc => {
           const userData = doc.data();
-          // console.log('User document:', doc.id, userData);
-
           // Filter out the current user by uid
           if (userData.uid !== currentUser?.uid) {
             users.push({ id: doc.id, ...userData });
           }
         });
-        // console.log('All users (filtered):', users);
         setAllUsers(users);
       } catch (error) {
-        // console.error('Error getting users:', error);
+        log.error(MODULE_FLAGS.GET_USERS, 'Error getting users:', error);
       }
     };
 
     if (currentUser?.uid) {
-      // // console.log('🔄 Loading all data for user:', currentUser.uid);
       getChats();
       getAllUsers();
       getFriends();
@@ -126,50 +155,120 @@ const Chats = () => {
     setShowSearchResults(searchTerm && searchTerm.length > 0);
   }, [searchTerm]);
 
-  const handleSelect = u => {
-    // // console.log('Selecting user:', u);
+  // Debug friends state changes
+  useEffect(() => {
+    log.debug(MODULE_FLAGS.FRIENDS, 'Friends state changed:', friends);
+    log.debug(MODULE_FLAGS.FRIENDS, 'Friends count:', friends.length);
+  }, [friends]);
 
+  const handleSelect = u => {
     // Check if user object is valid
     if (!u || !u.uid) {
-      // console.error('Invalid user object:', u);
+      log.error(MODULE_FLAGS.CHAT, 'Invalid user object:', u);
       return;
     }
 
-    // // console.log('User displayName:', u.displayName);
-    // // console.log('User uid:', u.uid);
     dispatch({ type: 'CHANGE_USER', payload: u });
   };
 
   const addFriend = async user => {
+    log.debug(
+      MODULE_FLAGS.ADD_FRIEND,
+      'Adding friend:',
+      user.displayName,
+      'UID:',
+      user.uid
+    );
+    log.debug(MODULE_FLAGS.ADD_FRIEND, 'User object:', user);
+
     setAddingFriend(user.uid); // Set loading state for this specific user
 
     try {
       const friendsDoc = doc(db, 'friends', currentUser.uid);
-      await setDoc(
-        friendsDoc,
-        {
-          friendsList: arrayUnion(user),
-        },
-        { merge: true }
+      log.debug(
+        MODULE_FLAGS.ADD_FRIEND,
+        'Adding to friends document:',
+        friendsDoc.path
+      );
+
+      // Get current friends list
+      const friendsSnapshot = await getDoc(friendsDoc);
+      let currentFriendsList = [];
+
+      if (friendsSnapshot.exists()) {
+        const friendsData = friendsSnapshot.data();
+        currentFriendsList = friendsData.friendsList || [];
+        log.debug(
+          MODULE_FLAGS.ADD_FRIEND,
+          'Current friends list:',
+          currentFriendsList
+        );
+      }
+
+      // Check if friend already exists
+      const friendExists = currentFriendsList.some(
+        friend => friend.uid === user.uid
+      );
+      if (friendExists) {
+        log.debug(MODULE_FLAGS.ADD_FRIEND, 'Friend already exists in list');
+        toast.info(`${user.displayName} is already your friend!`);
+        return;
+      }
+
+      // Add new friend to the list
+      const updatedFriendsList = [...currentFriendsList, user];
+      log.debug(
+        MODULE_FLAGS.ADD_FRIEND,
+        'Updated friends list:',
+        updatedFriendsList
+      );
+
+      await setDoc(friendsDoc, {
+        friendsList: updatedFriendsList,
+      });
+      log.debug(
+        MODULE_FLAGS.ADD_FRIEND,
+        'Successfully added friend to current user document'
       );
 
       // Also add to the other user's friends list
       const otherUserFriendsDoc = doc(db, 'friends', user.uid);
-      await setDoc(
-        otherUserFriendsDoc,
-        {
-          friendsList: arrayUnion({
-            uid: currentUser.uid,
-            displayName: currentUser.displayName,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-          }),
-        },
-        { merge: true }
-      );
 
-      // // console.log('Friend added successfully');
+      const currentUserFriendData = {
+        uid: currentUser.uid,
+        displayName: currentUser.displayName,
+        email: currentUser.email,
+        photoURL: currentUser.photoURL,
+      };
+
+      // Get other user's current friends list
+      const otherUserSnapshot = await getDoc(otherUserFriendsDoc);
+      let otherUserFriendsList = [];
+
+      if (otherUserSnapshot.exists()) {
+        const otherUserData = otherUserSnapshot.data();
+        otherUserFriendsList = otherUserData.friendsList || [];
+      }
+
+      // Check if current user already exists in other user's list
+      const currentUserExists = otherUserFriendsList.some(
+        friend => friend.uid === currentUser.uid
+      );
+      if (!currentUserExists) {
+        // Add current user to the other user's friends list
+        const updatedOtherUserFriendsList = [
+          ...otherUserFriendsList,
+          currentUserFriendData,
+        ];
+
+        await setDoc(otherUserFriendsDoc, {
+          friendsList: updatedOtherUserFriendsList,
+        });
+      } else {
+      }
+
       toast.success(`${user.displayName} added as friend!`);
+
       await getFriends(); // Refresh friends list
 
       // Show success state
@@ -183,7 +282,7 @@ const Chats = () => {
         setAddedFriend(null);
       }, 3000);
     } catch (error) {
-      // console.error('Error adding friend:', error);
+      log.error(MODULE_FLAGS.ADD_FRIEND, 'Error adding friend:', error);
       toast.error(`Failed to add ${user.displayName} as friend`);
     } finally {
       setAddingFriend(null); // Clear loading state
@@ -202,11 +301,6 @@ const Chats = () => {
     setShowConfirmModal(false); // Hide modal
 
     try {
-      // // console.log('Removing friend:', friendToRemove.displayName);
-      // // console.log('Note: Chat history will be preserved');
-
-      // Only remove from friends lists - DO NOT delete chat data
-      // Remove from current user's friends list
       const friendsDoc = doc(db, 'friends', currentUser.uid);
       const friendsSnapshot = await getDoc(friendsDoc);
 
@@ -219,7 +313,6 @@ const Chats = () => {
         await setDoc(friendsDoc, {
           friendsList: updatedFriendsList,
         });
-        // // console.log("Removed from current user's friends list");
       }
 
       // Remove from the other user's friends list
@@ -236,10 +329,8 @@ const Chats = () => {
         await setDoc(otherUserFriendsDoc, {
           friendsList: updatedOtherUserFriendsList,
         });
-        // // console.log("Removed from other user's friends list");
       }
 
-      // // console.log('Friend removed successfully - chat history preserved');
       toast.success(`${friendToRemove.displayName} removed from friends list`);
 
       // Reset chat context if currently chatting with the removed friend
@@ -267,7 +358,24 @@ const Chats = () => {
 
   // Check if a user is already a friend
   const isAlreadyFriend = user => {
-    return friends.some(friend => friend.uid === user.uid);
+    const isFriend = friends.some(friend => friend.uid === user.uid);
+    log.debug(
+      MODULE_FLAGS.FRIENDS,
+      `Checking if ${user.displayName} is friend:`,
+      isFriend
+    );
+    log.debug(
+      MODULE_FLAGS.FRIENDS,
+      'Current friends:',
+      friends.map(f => f.displayName)
+    );
+    log.debug(MODULE_FLAGS.FRIENDS, 'User UID:', user.uid);
+    log.debug(
+      MODULE_FLAGS.FRIENDS,
+      'Friends UIDs:',
+      friends.map(f => f.uid)
+    );
+    return isFriend;
   };
 
   return (
@@ -302,7 +410,30 @@ const Chats = () => {
                     } ${addingFriend === user.uid ? 'adding-friend-btn' : ''} ${
                       addedFriend === user.uid ? 'added-friend-btn' : ''
                     }`}
-                    onClick={() => !isAlreadyFriend(user) && addFriend(user)}
+                    onClick={() => {
+                      log.debug(
+                        MODULE_FLAGS.ADD_FRIEND,
+                        'Button clicked for user:',
+                        user.displayName
+                      );
+                      log.debug(
+                        MODULE_FLAGS.ADD_FRIEND,
+                        'Is already friend:',
+                        isAlreadyFriend(user)
+                      );
+                      if (!isAlreadyFriend(user)) {
+                        log.debug(
+                          MODULE_FLAGS.ADD_FRIEND,
+                          'Calling addFriend...'
+                        );
+                        addFriend(user);
+                      } else {
+                        log.debug(
+                          MODULE_FLAGS.ADD_FRIEND,
+                          'User is already a friend, not adding'
+                        );
+                      }
+                    }}
                     disabled={
                       addingFriend === user.uid ||
                       addedFriend === user.uid ||
@@ -341,87 +472,14 @@ const Chats = () => {
           </div>
         )}
 
-        {/* Debug Button - Remove this later */}
-        {/* {!showSearchResults && (
-          <div
-            style={{ padding: '10px', background: '#f0f0f0', margin: '10px 0' }}
-          >
-            <button
-              onClick={async () => {
-                // // console.log('🧪 Manual Firebase Test');
-                try {
-                  const docRef = doc(db, 'userChats', currentUser.uid);
-                  const docSnap = await getDoc(docRef);
-                  // // console.log(
-                  //   'Manual test - Document exists:',
-                  //   docSnap.exists()
-                  // );
-                  // // console.log('Manual test - Document data:', docSnap.data());
-
-                  // Manually update the chats state
-                  if (docSnap.exists()) {
-                    // // console.log('🔄 Manually updating chats state');
-                    setChats(docSnap.data());
-                  }
-                } catch (error) {
-                  // console.error('Manual test error:', error);
-                }
-              }}
-              style={{ padding: '5px 10px', margin: '5px' }}
-            >
-              Test Firebase Connection
-            </button>
-            <button
-              onClick={() => {
-                // // console.log('🔄 Force refresh chats');
-                // Force re-run the getChats function
-                const getChats = () => {
-                  // // console.log(
-                  //   '🚀 Setting up Firebase listener for user:',
-                  //   currentUser.uid
-                  // );
-
-                  const unsub = onSnapshot(
-                    doc(db, 'userChats', currentUser.uid),
-                    doc => {
-                      const chatData = doc.data();
-                      // // console.log('🔥 Firebase Listener Triggered (Manual)');
-                      // // console.log('Document exists:', doc.exists());
-                      // // console.log('Chat data received:', chatData);
-                      setChats(chatData || {});
-                    },
-                    error => {
-                      // console.error('❌ Firebase listener error:', error);
-                    }
-                  );
-                  return unsub;
-                };
-
-                if (currentUser?.uid) {
-                  getChats();
-                }
-              }}
-              style={{ padding: '5px 10px', margin: '5px' }}
-            >
-              Force Refresh Chats
-            </button>
-          </div>
-        )} */}
-
         {/* Recent Chats */}
         {!showSearchResults && chats && Object.entries(chats).length > 0 && (
           <div className="recent-chats">
             <h3>Recent</h3>
-            {/* {// console.log('All chats entries:', Object.entries(chats))} */}
             {(() => {
-              // console.group('📊 Parsing Chat Data');
-              // // console.log('🔍 Current friends state:', friends);
-              // // console.log('🔍 Friends count:', friends.length);
-              // Parse the Firebase data structure
               const chatEntries = [];
               const processedChatIds = new Set();
 
-              // console.group('🔍 Processing Chat Entries');
               Object.entries(chats).forEach(([key, value]) => {
                 // Extract chatId from keys like "chatId.userInfo" or "chatId.date"
                 const chatId = key.split('.')[0];
@@ -443,16 +501,6 @@ const Chats = () => {
                     date = chats[chatId].date;
                   }
 
-                  // // console.log(
-                  //   `🔍 Chat ${chatId} - Looking for userInfo:`,
-                  //   userInfo
-                  // );
-                  // // console.log(`🔍 Chat ${chatId} - Looking for date:`, date);
-                  // // console.log(
-                  //   `🔍 Chat ${chatId} - Full chat data:`,
-                  //   chats[chatId]
-                  // );
-
                   // Check both possible structures for lastMessage
                   let lastMessage = chats[`${chatId}.lastMessage`];
                   if (
@@ -462,12 +510,6 @@ const Chats = () => {
                   ) {
                     lastMessage = chats[chatId].lastMessage;
                   }
-
-                  // console.group(`💬 Chat ${chatId}`);
-                  // // console.log('userInfo:', userInfo);
-                  // // console.log('lastMessage:', lastMessage);
-                  // // console.log('date:', date);
-                  // console.groupEnd();
 
                   if (userInfo) {
                     // TEMPORARY: Show all chats for debugging
@@ -494,23 +536,6 @@ const Chats = () => {
                   }
                 }
               });
-              // console.groupEnd();
-
-              // console.group('📋 Final Chat Entries');
-              // // console.log('Parsed chat entries:', chatEntries);
-              chatEntries.forEach(entry => {
-                // console.group(
-                //   `👤 Entry ${entry.chatId} (${entry.userInfo?.displayName})`
-                // );
-                // // console.log('userInfo:', entry.userInfo?.displayName);
-                // // console.log('lastMessage:', entry.lastMessage);
-                // // console.log('hasText:', entry.lastMessage?.text);
-                // // console.log('textLength:', entry.lastMessage?.text?.length);
-                // // console.log('date:', entry.lastMessage?.date);
-                // console.groupEnd();
-              });
-              // console.groupEnd();
-              // console.groupEnd();
 
               if (chatEntries.length === 0) {
                 return (
@@ -599,12 +624,7 @@ const Chats = () => {
         {!showSearchResults && (
           <div className="friends-list">
             <h3>Friends</h3>
-            {/* {// console.log(
-              'Rendering friends list, friends count:',
-              friends.length
-            )} */}
             {friends.map(friend => {
-              // // console.log('Rendering friend:', friend);
               return (
                 <div className="userChat" key={friend.uid}>
                   <img src={friend.photoURL || '/default-avatar.png'} alt="" />

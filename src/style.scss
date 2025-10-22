@@ -1,21 +1,14 @@
 // ========================================
-// MAIN STYLE ENTRY POINT
+// MAIN STYLE ENTRY POINT - MODERN SASS ARCHITECTURE
 // ========================================
-// This is the main entry point for all styles
-// It imports the main SCSS file which manages all component styles
 
-// React-Toastify styles
+// Import Main SCSS Architecture (must be first)
 @use 'scss/main.scss';
-@import url('react-toastify/dist/ReactToastify.css');
-
-// ========================================
-// MODERN PROFESSIONAL TYPOGRAPHY SYSTEM
-// ========================================
 
 // Import Google Fonts for professional typography
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-// Typography Variables
+// Global CSS Variables (Light Theme)
 :root {
   // Font Family
   --font-family-primary:
@@ -57,125 +50,18 @@
   --tracking-normal: 0em;
   --tracking-wide: 0.025em;
   --tracking-wider: 0.05em;
-}
 
-// Apply typography to body
-body {
-  font-family: var(--font-family-primary);
-  font-size: var(--text-base);
-  font-weight: var(--font-normal);
-  line-height: var(--leading-normal);
-  letter-spacing: var(--tracking-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-// Typography Utility Classes
-.text-xs {
-  font-size: var(--text-xs);
-}
-.text-sm {
-  font-size: var(--text-sm);
-}
-.text-base {
-  font-size: var(--text-base);
-}
-.text-lg {
-  font-size: var(--text-lg);
-}
-.text-xl {
-  font-size: var(--text-xl);
-}
-.text-2xl {
-  font-size: var(--text-2xl);
-}
-.text-3xl {
-  font-size: var(--text-3xl);
-}
-.text-4xl {
-  font-size: var(--text-4xl);
-}
-
-.font-light {
-  font-weight: var(--font-light);
-}
-.font-normal {
-  font-weight: var(--font-normal);
-}
-.font-medium {
-  font-weight: var(--font-medium);
-}
-.font-semibold {
-  font-weight: var(--font-semibold);
-}
-.font-bold {
-  font-weight: var(--font-bold);
-}
-.font-extrabold {
-  font-weight: var(--font-extrabold);
-}
-
-.leading-tight {
-  line-height: var(--leading-tight);
-}
-.leading-snug {
-  line-height: var(--leading-snug);
-}
-.leading-normal {
-  line-height: var(--leading-normal);
-}
-.leading-relaxed {
-  line-height: var(--leading-relaxed);
-}
-.leading-loose {
-  line-height: var(--leading-loose);
-}
-
-.tracking-tighter {
-  letter-spacing: var(--tracking-tighter);
-}
-.tracking-tight {
-  letter-spacing: var(--tracking-tight);
-}
-.tracking-normal {
-  letter-spacing: var(--tracking-normal);
-}
-.tracking-wide {
-  letter-spacing: var(--tracking-wide);
-}
-.tracking-wider {
-  letter-spacing: var(--tracking-wider);
-}
-
-:root {
-  // ========================================
-  // BASE COLORS - Light Theme
-  // ========================================
-
-  // Background Colors
+  // Base Colors - Light Theme
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
-
-  // Text Colors
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --text-tertiary: #9ca3af;
-
-  // Border Colors
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
 
-  // Shadow Colors
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --shadow-light: rgba(0, 0, 0, 0.05);
-  --shadow-medium: rgba(0, 0, 0, 0.15);
-
-  // ========================================
-  // BRAND COLORS - Light Theme
-  // ========================================
-
-  // Primary Brand Colors - Modern Professional Blue
+  // Brand Colors - Light Theme
   --accent-primary: #2563eb;
   --accent-secondary: #1d4ed8;
   --accent-hover: #1e40af;
@@ -193,11 +79,7 @@ body {
   --info-color: #3b82f6;
   --info-light: #dbeafe;
 
-  // ========================================
-  // COMPONENT SPECIFIC COLORS - Light Theme
-  // ========================================
-
-  // Chat Interface - Modern Professional
+  // Component Colors - Light Theme
   --chat-bg: #ffffff;
   --sidebar-bg: #f8fafc;
   --message-bg: #f1f5f9;
@@ -205,20 +87,14 @@ body {
   --message-sent-text: #ffffff;
   --input-bg: #ffffff;
   --input-border: #e2e8f0;
-
-  // Forms & Authentication
   --form-bg: #ffffff;
   --form-border: #a7bcff;
   --form-accent: #7b96ec;
   --form-text: #5d5b8d;
   --form-placeholder: #b3b3b3;
-
-  // Navigation
   --nav-bg: #ffffff;
   --nav-text: #1f2937;
   --nav-border: #e5e7eb;
-
-  // Buttons - Modern Professional
   --btn-primary-bg: #2563eb;
   --btn-primary-text: #ffffff;
   --btn-primary-hover: #1d4ed8;
@@ -226,11 +102,7 @@ body {
   --btn-secondary-text: #475569;
   --btn-secondary-hover: #e2e8f0;
 
-  // ========================================
-  // UTILITY COLORS - Light Theme
-  // ========================================
-
-  // Gray Scale
+  // Utility Colors
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -241,47 +113,29 @@ body {
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-
-  // Special Colors
   --white: #ffffff;
   --black: #000000;
   --transparent: transparent;
+
+  // Shadow Colors
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
 }
 
+// Dark Theme
 [data-theme='dark'] {
-  // ========================================
-  // BASE COLORS - Dark Theme
-  // ========================================
-
-  // Background Colors
   --bg-primary: #1f2937;
   --bg-secondary: #111827;
   --bg-tertiary: #374151;
-
-  // Text Colors
   --text-primary: #f9fafb;
   --text-secondary: #d1d5db;
   --text-tertiary: #9ca3af;
-
-  // Border Colors
   --border-color: #374151;
   --border-light: #4b5563;
-
-  // Shadow Colors
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-light: rgba(0, 0, 0, 0.2);
-  --shadow-medium: rgba(0, 0, 0, 0.4);
-
-  // ========================================
-  // BRAND COLORS - Dark Theme
-  // ========================================
-
-  // Primary Brand Colors - Modern Professional Blue
   --accent-primary: #3b82f6;
   --accent-secondary: #2563eb;
-  --accent-hover: #1d4ed8;
-
-  // Status Colors
+  --accent-hover: #60a5fa;
   --success-color: #34d399;
   --success-light: #064e3b;
   --error-color: #f87171;
@@ -293,12 +147,6 @@ body {
   --warning-light: #78350f;
   --info-color: #60a5fa;
   --info-light: #1e3a8a;
-
-  // ========================================
-  // COMPONENT SPECIFIC COLORS - Dark Theme
-  // ========================================
-
-  // Chat Interface - Modern Professional Dark
   --chat-bg: #1e293b;
   --sidebar-bg: #0f172a;
   --message-bg: #334155;
@@ -306,32 +154,20 @@ body {
   --message-sent-text: #ffffff;
   --input-bg: #334155;
   --input-border: #475569;
-
-  // Forms & Authentication
   --form-bg: #374151;
   --form-border: #6b7280;
   --form-accent: #818cf8;
   --form-text: #f9fafb;
   --form-placeholder: #9ca3af;
-
-  // Navigation
   --nav-bg: #1f2937;
   --nav-text: #f9fafb;
   --nav-border: #374151;
-
-  // Buttons - Modern Professional Dark
   --btn-primary-bg: #3b82f6;
   --btn-primary-text: #ffffff;
   --btn-primary-hover: #2563eb;
   --btn-secondary-bg: #334155;
   --btn-secondary-text: #f1f5f9;
   --btn-secondary-hover: #475569;
-
-  // ========================================
-  // UTILITY COLORS - Dark Theme
-  // ========================================
-
-  // Gray Scale (inverted for dark theme)
   --gray-50: #111827;
   --gray-100: #1f2937;
   --gray-200: #374151;
@@ -342,9 +178,23 @@ body {
   --gray-700: #e5e7eb;
   --gray-800: #f3f4f6;
   --gray-900: #f9fafb;
-
-  // Special Colors
   --white: #1f2937;
   --black: #f9fafb;
-  --transparent: transparent;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-light: rgba(0, 0, 0, 0.2);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
 }
+
+// Global Body Styles
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// React-Toastify styles
+@import url('react-toastify/dist/ReactToastify.css');

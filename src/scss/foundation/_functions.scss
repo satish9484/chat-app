@@ -1,0 +1,116 @@
+// ========================================
+// FOUNDATION: FUNCTIONS
+// Modern Sass Functions using @use/@forward
+// ========================================
+
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:color';
+@use 'variables' as *;
+
+// Get color from color map
+@function color($name, $variant: 'base') {
+  @if map.has-key($colors, $name) {
+    @return map.get($colors, $name);
+  }
+  @error "Color '#{$name}' not found in color map.";
+}
+
+// Get spacing value
+@function spacing($size) {
+  @if map.has-key($spacing, $size) {
+    @return map.get($spacing, $size);
+  }
+  @error "Spacing '#{$size}' not found in spacing map.";
+}
+
+// Get font size
+@function font-size($size) {
+  @if map.has-key($font-sizes, $size) {
+    @return map.get($font-sizes, $size);
+  }
+  @error "Font size '#{$size}' not found in font-sizes map.";
+}
+
+// Get font weight
+@function font-weight($weight) {
+  @if map.has-key($font-weights, $weight) {
+    @return map.get($font-weights, $weight);
+  }
+  @error "Font weight '#{$weight}' not found in font-weights map.";
+}
+
+// Get breakpoint value
+@function breakpoint($size) {
+  @if map.has-key($breakpoints, $size) {
+    @return map.get($breakpoints, $size);
+  }
+  @error "Breakpoint '#{$size}' not found in breakpoints map.";
+}
+
+// Convert px to rem
+@function rem($pixels, $base: 16) {
+  @return math.div($pixels, $base) * 1rem;
+}
+
+// Convert px to em
+@function em($pixels, $base: 16) {
+  @return math.div($pixels, $base) * 1em;
+}
+
+// Calculate contrast ratio
+@function contrast-ratio($color1, $color2) {
+  $l1: color.luminance($color1);
+  $l2: color.luminance($color2);
+
+  $ratio: math.div(math.max($l1, $l2), math.min($l1, $l2));
+
+  @return $ratio;
+}
+
+// Check if color is light or dark
+@function is-light($color) {
+  @return color.luminance($color) > 0.5;
+}
+
+// Get contrasting text color
+@function contrasting-text($background) {
+  @if is-light($background) {
+    @return #000000;
+  } @else {
+    @return #ffffff;
+  }
+}
+
+// Create hover color (darker/lighter)
+@function hover-color($color, $amount: 10%) {
+  @if is-light($color) {
+    @return color.adjust($color, $lightness: -10%);
+  } @else {
+    @return color.adjust($color, $lightness: 10%);
+  }
+}
+
+// Create shadow color
+@function shadow-color($color, $opacity: 0.1) {
+  @return color.adjust($color, $alpha: -$opacity);
+}
+
+// Z-index scale function
+@function z-index($level: 'base') {
+  $z-indexes: (
+    base: 1,
+    dropdown: 1000,
+    sticky: 1020,
+    fixed: 1030,
+    modal-backdrop: 1040,
+    modal: 1050,
+    popover: 1060,
+    tooltip: 1070,
+  );
+
+  @if map.has-key($z-indexes, $level) {
+    @return map.get($z-indexes, $level);
+  }
+  @error "Z-index level '#{$level}' not found in z-indexes map.";
+}

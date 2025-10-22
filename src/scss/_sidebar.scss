@@ -1,5 +1,5 @@
 // Sidebar component styling - Mobile First Responsive Design
-@use 'mixins' as *;
+@use 'foundation' as *;
 .sidebar {
   @include sidebar-responsive;
   background: linear-gradient(
