@@ -1,8 +1,7 @@
-import React from 'react';
 import './style.scss';
 
 const Loading = ({ isSuspense, children }) => {
-  const isLoading = false;
+  const isLoading = true;
 
   return (
     <>
@@ -12,9 +11,9 @@ const Loading = ({ isSuspense, children }) => {
             <div className="double-bounce1"></div>
             <div className="double-bounce2"></div>
           </div>
+          {children}
         </div>
       )}
-      {children}
     </>
   );
 };
